@@ -42,7 +42,6 @@
           </div>
         </el-collapse-item>
       </el-collapse>
-      
     </div>
   </div>
   
@@ -120,7 +119,6 @@ export default {
     padding: 5px;
     box-sizing: border-box;
     border-right: 1px solid gainsboro;
-
     width: 300px;
     .page-info-item{
       span{
@@ -143,7 +141,7 @@ export default {
     height: 100%;
     width: calc(100% - 300px);
     border-right: 1px solid gainsboro;
-
+    overflow: scroll;
   }
 }
 .view-info-container{

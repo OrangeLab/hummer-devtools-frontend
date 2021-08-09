@@ -1,11 +1,14 @@
 {
   "name": "@hummer/devtools-frontend",
-  "version": "0.1.0",
-  "private": true,
+  "version": "0.1.0-alpha.0",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
   },
   "dependencies": {
     "core-js": "^3.6.5",
