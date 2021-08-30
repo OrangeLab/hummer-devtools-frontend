@@ -6,6 +6,13 @@ module.exports = {
     writeToDisk: true,
     watchContentBase: true
   },
+  configureWebpack: {
+    resolve: {
+      alias: {
+        '@': resolve('src'),
+      }
+    }
+  },
   pages: {
     index: {
       entry: 'src/pages/index/main.js',

@@ -7,7 +7,9 @@ Vue.use(Vuex)
 const state = () => ({
   logList: [],
   pageList: [],
-  pageInfoMap: {}
+  pageInfoMap: {},
+  defaultActivePage: {},
+  activePan: 'console'
 })
 
 // getters
@@ -15,7 +17,9 @@ const getters = {}
 
 // actions
 const actions = {
-
+  setActivePan({ commit }, pan) {
+    commit('ACTIVE_PAN', pan)
+  },
 }
 
 // mutations
@@ -29,6 +33,9 @@ const mutations = {
   },
   updatePageList (state, msg) {
     state.pageList = msg.params.pageList
+    if (state.pageList && state.pageList.length) {
+      Vue.set(state.defaultActivePage, state.pageList[0])
+    }
   },
   updatePageInfoMap (state, msg) {
     console.log(1111111)
@@ -47,6 +54,9 @@ const mutations = {
         className:  msg.params.className
       }
     })
+  },
+  ACTIVE_PAN(state, pan) {
+    state.activePan = pan
   },
 }
 

@@ -1,0 +1,91 @@
+<template>
+  <div
+    class="pan-resizer"
+    :class="{ enable }"
+    ref="resizer"
+    @mousedown="handleMouseDown">
+  </div>
+</template>
+
+<script>
+import Event from '@/utils/event'
+export default {
+  props: ['enable', 'pan'],
+  components: {
+
+  },
+  data() {
+    return {
+      resizing: false,
+      originalNextPanLeft: null,
+      originalNextPanRight: null,
+      originalCurrentPanRight: null,
+      originalCurrentPanLeft: null,
+      currentPan: null,
+      nextPan: null,
+      visiblePans: ['console']
+    }
+  },
+  computed: {
+    nextPanName() {
+      const currentIndex = this.visiblePans.indexOf(this.pan)
+      return this.visiblePans[currentIndex + 1]
+    }
+  },
+  created() {
+  },
+  watch: {
+  },
+  methods: {
+    updatePrePan(style) {
+      Event.$emit('set-tree-pan-style', style)
+    },
+    updateCurrentPan(style) {
+      Event.$emit(`set-${this.pan}-pan-style`, style)
+    },
+    handleMouseDown() {
+      this.resizing = true
+      this.currentPan = this.$refs.resizer.parentNode
+
+      document.addEventListener('mousemove', this.handleMouseMove)
+      document.addEventListener('mouseup', this.handleMouseUp)
+    },
+    handleMouseUp() {
+      this.resizing = false
+      document.removeEventListener('mousemove', this.handleMouseMove)
+      document.removeEventListener('mouseup', this.handleMouseUp)
+      // this.currentPan.parentNode.classList.remove('resizing')
+      // document.getElementById('output-iframe').classList.remove('disable-mouse-events')
+      // Event.$emit('refresh-editor', { run: false })
+    },
+    handleMouseMove(e) {
+      if (this.resizing) {
+        console.log(e)
+        e.preventDefault()
+        const newCurrentPanHeight = window.innerHeight - e.clientY
+        const newPrePanHeight = e.clientY
+        // TODO 定义阀值
+        this.updateCurrentPan({ height: `${newCurrentPanHeight}px` })
+        this.updatePrePan({ height: `${newPrePanHeight}px` })
+      }
+    },
+  }
+};
+</script>
+
+<style scoped lang="scss">
+  .pan-resizer {
+    width: 100%;
+    height: 5px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    border-top: 1px solid #e2e2e2;
+    z-index: 1000;
+    &.enable:hover {
+      cursor: row-resize;
+      border-top: 1px dashed #39f;
+    }
+  }
+</style>

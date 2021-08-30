@@ -8,7 +8,7 @@
           <span class="item-value">{{value}}</span>
         </div>
       </div>
-      <div class="view-tree" >
+      <div class="view-tree">
         <div class="col-title">TreeView</div>
         <el-tree
           :expand-on-click-node="false"
@@ -17,8 +17,23 @@
           :props="defaultProps"
           @node-click="handleNodeClick"
         >
+          <div class="custom-tree-node" slot-scope="{ node, data }">
+            <span v-text="`<${node.label}>`"></span>
+            <span v-if="node.label == 'text'">{{ data.text }}</span>
+            <!-- <el-button
+              v-if="node.label == 'image'"
+              type="text"
+              size="mini">
+              {{ data.src }}
+            </el-button> -->
+            <el-image 
+              v-if="node.label == 'image'"
+              style="width: 100px; height: 40px"
+              :src="data.src" 
+              :preview-src-list="[data.src]">
+            </el-image>
+          </div>
         </el-tree>
-        
       </div>
     </div>
     <div class="view-info-container" :style="viewInfoStyle">
@@ -61,7 +76,8 @@ export default {
         children: 'children',
         label: 'name'
       },
-      viewTreeContainerWidth: 1500,
+      // viewTreeContainerWidth: 1500,
+      viewTreeContainerWidth: 800,
       activeCollapseNames: ['1', '2', '3']
     }
   },
@@ -165,5 +181,13 @@ export default {
         width: 140px;
       }
     }
+}
+.custom-tree-node {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  padding-right: 8px;
 }
 </style>
