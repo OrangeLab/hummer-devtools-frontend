@@ -61,7 +61,7 @@ export default {
   },
   mounted() {
     this.handleWebSocket()
-    this.treeInit()
+    this.styleInit()
   },
   methods: {
     handleWebSocket() {
@@ -144,9 +144,8 @@ export default {
     handleClick(name) {
       console.log('handleClick', name)
     },
-    treeInit() {
-      Event.$on(`set-tree-pan-style`, style => {
-        console.log('style', style)
+    styleInit() {
+      Event.$on(`set-tab-pan-style`, style => {
         this.style = {
           ...this.style,
           ...style

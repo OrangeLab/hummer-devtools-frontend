@@ -1,74 +1,80 @@
-<template lang="">
+<template>
   <div class="view-tree-comp">
-    <div class="view-tree-container" :style="viewTreeContainerStyle">
-      <div class="page-info">
-        <div class="col-title">PageInfo</div>
-        <div class="page-info-item" v-for="(value, key) in baseInfo" :key="key">
-          <span class="item-key">{{key}}</span>
-          <span class="item-value">{{value}}</span>
-        </div>
+    <div class="page-info-container containers" :style="pageStyle">
+      <div class="col-title">PageInfo</div>
+      <div class="info-item" v-for="(value, key) in baseInfo" :key="key">
+        <span class="item-key">{{key}}</span>
+        <span class="item-value">{{value}}</span>
       </div>
-      <div class="view-tree">
-        <div class="col-title">TreeView</div>
-        <el-tree
-          :expand-on-click-node="false"
-          :highlight-current="true"
-          :data="viewTree"
-          :props="defaultProps"
-          @node-click="handleNodeClick"
-        >
-          <div class="custom-tree-node" slot-scope="{ node, data }">
-            <span v-text="`<${node.label}>`"></span>
-            <span v-if="node.label == 'text'">{{ data.text }}</span>
-            <!-- <el-button
-              v-if="node.label == 'image'"
-              type="text"
-              size="mini">
-              {{ data.src }}
-            </el-button> -->
-            <el-image 
-              v-if="node.label == 'image'"
-              style="width: 100px; height: 40px"
-              :src="data.src" 
-              :preview-src-list="[data.src]">
-            </el-image>
-          </div>
-        </el-tree>
-      </div>
+      <VerResizerPan pan="page" />
     </div>
-    <div class="view-info-container" :style="viewInfoStyle">
+    <div class="view-tree-container containers" :style="treeStyle">
+      <div class="col-title">TreeView</div>
+      <el-tree
+        :expand-on-click-node="false"
+        :highlight-current="true"
+        :data="viewTree"
+        :props="defaultProps"
+        @node-click="handleNodeClick">
+        <div class="custom-tree-node" slot-scope="{ node, data }">
+          <span v-text="`<${node.label}>`"></span>
+          <span v-if="node.label == 'text'">{{ data.text }}</span>
+          <el-image 
+            v-if="node.label == 'image'"
+            style="width: 100px; height: 40px"
+            :src="data.src" 
+            :preview-src-list="[data.src]">
+          </el-image>
+        </div>
+      </el-tree>
+      <VerResizerPan pan="tree" />
+    </div>
+    <div class="view-info-container containers" :style="viewStyle">
       <div class="col-title">ViewInfo</div>
       <el-collapse v-model="activeCollapseNames">
         <el-collapse-item title="RectInfo" name="1" v-if="currentViewInfo.rect">
-          <div class="view-info-item" v-for="(value, key) in currentViewInfo.rect" :key="key">
+          <div class="info-item" v-for="(value, key) in currentViewInfo.rect" :key="key">
             <span class="item-key">{{key}}</span>
             <span class="item-value">{{value}}</span>
           </div>
         </el-collapse-item>
         <el-collapse-item title="Style" name="2" v-if="currentViewInfo.style">
-          <div class="view-info-item" v-for="(value, key) in currentViewInfo.style" :key="key">
+          <div class="info-item" v-for="(value, key) in currentViewInfo.style" :key="key">
             <span class="item-key">{{key}}</span>
             <span class="item-value">{{value}}</span>
           </div>
         </el-collapse-item>
         <el-collapse-item title="Class" name="3" v-if="currentViewInfo.className">
-          <div class="view-info-item">
+          <div class="info-item">
             <span class="item-key">{{currentViewInfo.className}}</span>
           </div>
         </el-collapse-item>
       </el-collapse>
-      
     </div>
   </div>
-  
-    
+
 </template>
 <script>
 import { mapState } from 'vuex'
-
+import VerResizerPan from './VerResizerPan'
+import panPosition from '@/utils/pan-position'
+import Event from '@/utils/event'
 export default {
   props: {
     tenonId: [String, Number]
+  },
+  components: {
+    VerResizerPan
+  },
+  watch: {
+    visiblePans: {
+      immediate: true,
+      handler(val) {
+        this.pageStyle = panPosition(val, 'page')
+        this.treeStyle = panPosition(val, 'tree')
+        this.viewStyle = panPosition(val, 'view')
+      }
+    }
   },
   data() {
     return {
@@ -76,12 +82,15 @@ export default {
         children: 'children',
         label: 'name'
       },
-      // viewTreeContainerWidth: 1500,
       viewTreeContainerWidth: 800,
-      activeCollapseNames: ['1', '2', '3']
+      activeCollapseNames: ['1', '2', '3'],
+      pageStyle: {},
+      treeStyle: {},
+      viewStyle: {}
     }
   },
   computed: {
+    ...mapState(['visiblePans']),
     ...mapState({
       pageInfoMap: state => state.pageInfoMap
     }),
@@ -94,18 +103,12 @@ export default {
     currentViewInfo() {
       return this.pageInfoMap[this.tenonId] && this.pageInfoMap[this.tenonId].currentViewInfo || {}
     },
-    viewTreeContainerStyle() {
-      return `width: ${this.viewTreeContainerWidth}px;`
-    },
-    viewInfoStyle() {
-      return `width: calc(100% - ${this.viewTreeContainerWidth}px);`
-    }
   },
   created() {
     this.$emit('getViewTree', this.tenonId)
   },
   mounted() {
-
+    this.pageInit()
   },
   methods: {
     handleNodeClick(data) {
@@ -114,12 +117,23 @@ export default {
         tenonId: this.tenonId,
         viewId: data.__view_id
       })
+    },
+    pageInit() {
+      this.visiblePans.forEach(pan => {
+        Event.$on(`set-${pan}-pan-style`, style => {
+          this[`${pan}Style`] = {
+            ...this[`${pan}Style`],
+            ...style
+          }
+        })
+      });
     }
   },
 }
 </script>
-<style lang="less">
-.view-tree-comp{
+<style scoped lang="scss">
+.view-tree-comp {
+  position: relative;
   height: 100%;
   display: flex;
   overflow: scroll;
@@ -128,59 +142,43 @@ export default {
   font-size: 24px;
   color: #409EFF;
 }
-.view-tree-container{
+.containers {
+  position: absolute;
   height: 100%;
-  display: inline-flex;
-  .page-info{
-    // display: inline-block;
-    padding: 5px;
-    box-sizing: border-box;
-    border-right: 1px solid gainsboro;
-
-    width: 300px;
-    .page-info-item{
-      span{
-        display: inline-block;
-        color: #909399;
-        font-size: 12px;
-      }
-      .item-key{
-        width: 140px;
-      }
-      .item-value{
-        width: 140px;
-      }
-    }
-  }
-  .view-tree{
-    // display: inline-block;
-    padding: 5px;
-    box-sizing: border-box;
-    height: 100%;
-    width: calc(100% - 300px);
-    border-right: 1px solid gainsboro;
-
+  padding: 5px;
+  overflow-y: scroll;
+  top: 0;
+  bottom: 0;
+  box-sizing: border-box;
+  border-right: 1px solid gainsboro;
+  &:nth-child(3) {
+    border: none
   }
 }
+.page-info-container {
+  // display: inline-flex;
+  // background-color: deepskyblue;
+  // flex-direction: column;
+}
+.view-tree-container{
+  // display: inline-block;
+}
 .view-info-container{
-  box-sizing: border-box;
-  display: inline-block;
+}
+.info-item{
+  display: flex;
   padding: 5px;
-  height: 100%;
-  overflow-y: scroll;
-  .view-info-item{
-      span{
-        display: inline-block;
-        color: #909399;
-        font-size: 12px;
-      }
-      .item-key{
-        width: 140px;
-      }
-      .item-value{
-        width: 140px;
-      }
-    }
+  span{
+    display: inline-block;
+    color: #909399;
+    font-size: 12px;
+  }
+  .item-key{
+    width: 140px;
+  }
+  .item-value{
+    width: 140px;
+  }
 }
 .custom-tree-node {
   flex: 1;

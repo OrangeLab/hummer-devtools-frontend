@@ -9,7 +9,8 @@ const state = () => ({
   pageList: [],
   pageInfoMap: {},
   defaultActivePage: {},
-  activePan: 'console'
+  activePan: 'console',
+  visiblePans: ['page', 'tree', 'view'],
 })
 
 // getters

@@ -17,10 +17,6 @@ export default {
   data() {
     return {
       resizing: false,
-      originalNextPanLeft: null,
-      originalNextPanRight: null,
-      originalCurrentPanRight: null,
-      originalCurrentPanLeft: null,
       currentPan: null,
       nextPan: null,
       visiblePans: ['console']
@@ -38,7 +34,7 @@ export default {
   },
   methods: {
     updatePrePan(style) {
-      Event.$emit('set-tree-pan-style', style)
+      Event.$emit('set-tab-pan-style', style)
     },
     updateCurrentPan(style) {
       Event.$emit(`set-${this.pan}-pan-style`, style)
@@ -54,13 +50,9 @@ export default {
       this.resizing = false
       document.removeEventListener('mousemove', this.handleMouseMove)
       document.removeEventListener('mouseup', this.handleMouseUp)
-      // this.currentPan.parentNode.classList.remove('resizing')
-      // document.getElementById('output-iframe').classList.remove('disable-mouse-events')
-      // Event.$emit('refresh-editor', { run: false })
     },
     handleMouseMove(e) {
       if (this.resizing) {
-        console.log(e)
         e.preventDefault()
         const newCurrentPanHeight = window.innerHeight - e.clientY
         const newPrePanHeight = e.clientY
