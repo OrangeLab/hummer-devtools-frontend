@@ -6,7 +6,7 @@
       </el-tab-pane>
       <el-tab-pane label="MEMORY" name="memory" style="height:100%;">在做了(新建文件夹</el-tab-pane>
     </el-tabs>
-    <hor-resizer-pan pan="console" :enable="true"></hor-resizer-pan>
+    <hor-resizer-pan pan="console"></hor-resizer-pan>
   </div>
 </template>
 
@@ -62,10 +62,10 @@ export default {
   .console-pan {
     position: absolute;
     width: 100%;
-    bottom: 0;
+    bottom: 5px;
     left: 0;
     right: 0;
-    z-index: 3000;
+    z-index: 2001;
   }
   #tools-container {
     height: inherit;

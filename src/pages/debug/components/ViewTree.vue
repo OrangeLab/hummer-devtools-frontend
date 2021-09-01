@@ -1,6 +1,6 @@
 <template>
   <div class="view-tree-comp">
-    <div class="page-info-container containers" :style="pageStyle">
+    <div class="page-info-container containers" :class="{ resizing }" :style="pageStyle">
       <div class="col-title">PageInfo</div>
       <div class="info-item" v-for="(value, key) in baseInfo" :key="key">
         <span class="item-key">{{key}}</span>
@@ -8,7 +8,7 @@
       </div>
       <VerResizerPan pan="page" />
     </div>
-    <div class="view-tree-container containers" :style="treeStyle">
+    <div class="view-tree-container containers" :class="{ resizing }" :style="treeStyle">
       <div class="col-title">TreeView</div>
       <el-tree
         :expand-on-click-node="false"
@@ -29,7 +29,7 @@
       </el-tree>
       <VerResizerPan pan="tree" />
     </div>
-    <div class="view-info-container containers" :style="viewStyle">
+    <div class="view-info-container containers" :class="{ resizing }" :style="viewStyle">
       <div class="col-title">ViewInfo</div>
       <el-collapse v-model="activeCollapseNames">
         <el-collapse-item title="RectInfo" name="1" v-if="currentViewInfo.rect">
@@ -86,7 +86,8 @@ export default {
       activeCollapseNames: ['1', '2', '3'],
       pageStyle: {},
       treeStyle: {},
-      viewStyle: {}
+      viewStyle: {},
+      resizing: false
     }
   },
   computed: {
@@ -127,6 +128,9 @@ export default {
           }
         })
       });
+      Event.$on('mouse-up-event', resizing => {
+        this.resizing = resizing
+      })
     }
   },
 }
@@ -153,6 +157,9 @@ export default {
   border-right: 1px solid gainsboro;
   &:nth-child(3) {
     border: none
+  }
+  &.resizing {
+    cursor: col-resize;
   }
 }
 .page-info-container {

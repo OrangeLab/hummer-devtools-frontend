@@ -1,6 +1,7 @@
 <template>
   <div
-    class="pan-resizer enable"
+    class="pan-resizer"
+    :class="{ resizing }"
     ref="resizer"
     @mousedown="handleMouseDown">
   </div>
@@ -10,7 +11,9 @@
 import Event from '@/utils/event'
 import { mapState } from 'vuex'
 export default {
-  props: ['pan'],
+  props: {
+    pan: '',
+  },
   data() {
     return {
       resizing: false,
@@ -45,6 +48,7 @@ export default {
     },
     handleMouseDown() {
       this.resizing = true
+      this.emitMouseUpEvent()
       this.currentPan = this.$refs.resizer.parentNode
       this.nextPan = this.getNextVisiblePan(this.currentPan)
       this.originalNextPanLeft = parseFloat(this.nextPan.style.left)
@@ -57,6 +61,7 @@ export default {
     },
     handleMouseUp() {
       this.resizing = false
+      this.emitMouseUpEvent()
       document.removeEventListener('mousemove', this.handleMouseMove)
       document.removeEventListener('mouseup', this.handleMouseUp)
     },
@@ -66,13 +71,16 @@ export default {
         const newNextPanLeft = e.clientX / window.innerWidth * 100
         if (
             (newNextPanLeft - this.originalCurrentPanLeft > 5) &&
-          (100 - newNextPanLeft - this.originalNextPanRight > 5)
+            (100 - newNextPanLeft - this.originalNextPanRight > 5)
         ) {
           this.updateNextPan({ left: `${newNextPanLeft}%` })
           const newCurrentPanRight = this.originalCurrentPanRight - (newNextPanLeft - this.originalNextPanLeft)
           this.updateCurrentPan({ right: `${newCurrentPanRight}%` })
         }
       }
+    },
+    emitMouseUpEvent() {
+      Event.$emit('mouse-up-event', this.resizing)
     }
   }
 };
@@ -86,11 +94,15 @@ export default {
     top: 0;
     right: 0;
     bottom: 0;
-    border-top: 1px solid #e2e2e2;
+    border-right: 1px solid #e2e2e2;
     z-index: 1000;
-    &.enable:hover {
+    &:hover {
+      cursor: ew-resize;
+      border-right: 2px solid #39f;
+    }
+    &.resizing {
       cursor: col-resize;
-      border-right: 1px dashed #39f;
+      border-right: 2px solid #39f;
     }
   }
 </style>
