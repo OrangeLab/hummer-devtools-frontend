@@ -17,7 +17,7 @@
           :name="item.tenonId + ''"
           style="height:100%;"
           lazy>
-          <ViewTree :tenonId="item.tenonId" @getViewTree="getViewTree" @getViewInfo="getViewInfo"/>
+          <TabPaneContent :tenonId="item.tenonId" @getViewTree="getViewTree" @getViewInfo="getViewInfo"/>
         </el-tab-pane>
       </el-tabs>
       <console-pan :toolsContainerStyle="toolsContainerStyle"></console-pan>
@@ -27,13 +27,13 @@
 
 <script>
 import ConsolePan from './components/ConsolePan.vue'
-import ViewTree from './components/ViewTree.vue'
+import TabPaneContent from './components/TabPaneContent.vue'
 import { mapState } from 'vuex'
 import Event from '@/utils/event'
 export default {
   name: "App",
   components: {
-    ViewTree,
+    TabPaneContent,
     ConsolePan
   },
   data: () => ({
