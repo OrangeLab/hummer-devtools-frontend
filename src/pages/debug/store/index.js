@@ -1,6 +1,7 @@
 
 import Vue from 'vue'
 import Vuex from 'vuex'
+import { processViewTree } from '@/utils/processViewTree'
 
 Vue.use(Vuex)
 
@@ -43,7 +44,8 @@ const mutations = {
     Vue.set(state.pageInfoMap, msg.params.tenonId, {
       
       viewTree: msg.params.viewTree,
-      baseInfo: msg.params.baseInfo
+      baseInfo: msg.params.baseInfo,
+      viewTreeData: processViewTree(msg.params.viewTree)
     })
   },
   updateViewInfo (state, msg) {

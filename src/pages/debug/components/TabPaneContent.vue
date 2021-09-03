@@ -2,7 +2,7 @@
   <div class="view-tree-comp">
     <PageInfo :baseInfo="baseInfo" />
     
-    <TreeView :viewTree="viewTree" @getViewInfo="getViewInfo" />
+    <TreeView :tenonId="tenonId" @getViewInfo="getViewInfo" />
     
     <ViewInfo :currentViewInfo="currentViewInfo" />
   </div>

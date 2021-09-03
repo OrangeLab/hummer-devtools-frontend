@@ -1,17 +1,33 @@
 <template>
-  <div class="view-tree-container containers" :class="{ resizing }" :style="style">
-    <div class="col-title">TreeView</div>
+  <div class="containers" :class="{ resizing }" :style="style">
+    <el-row>
+      <el-col :span="6">
+        <div class="col-title">TreeView</div>
+      </el-col>
+      <el-col :span="12" :offset="6">
+         <el-input
+          placeholder="请输入组件名"
+          v-model="tagName"
+          @input="handleSearchTag"
+          clearable>
+        </el-input>
+      </el-col>
+    </el-row>
     <el-tree
       :expand-on-click-node="false"
       :highlight-current="true"
-      :data="viewTree"
-      :props="defaultProps"
+      :data="treeData"
+      :default-expand-all="true"
       @node-click="handleNodeClick">
       <div class="custom-tree-node" slot-scope="{ node, data }">
-        <span v-text="`<${node.label}>`"></span>
-        <span v-if="node.label == 'text'">{{ data.text }}</span>
+        <span>
+          <span v-text="'<'"></span>
+          <span v-html="node.label"></span>
+          <span v-text="'>'"></span>
+        </span>
+        <span v-if="data.name == 'text'">{{ data.text }}</span>
         <el-image 
-          v-if="node.label == 'image'"
+          v-if="data.name == 'image'"
           style="width: 100px; height: 40px"
           :src="data.src" 
           :preview-src-list="[data.src]">
@@ -34,26 +50,34 @@ export default {
       type: Object,
       default: () => ({})
     },
-    viewTree: {
-      type: Array,
-      default: () => ([])
-    }
+    tenonId: Number
   },
   components: {
     VerResizerPan
   },
   data() {
     return {
-      defaultProps: {
-        children: 'children',
-        label: 'name'
-      },
       style: {},
-      pan: 'tree'
+      pan: 'tree',
+      tagName: '',
+      matchedKeys: [],  // ids
+      cloneTreeData: []
     }
   },
   computed: {
-    ...mapState(['visiblePans'])
+    ...mapState(['visiblePans']),
+    ...mapState({
+      pageInfoMap: state => state.pageInfoMap
+    }),
+    viewTreeData() {
+      return this.pageInfoMap[this.tenonId] && this.pageInfoMap[this.tenonId].viewTreeData || []
+    },
+    treeData () {
+      return this.tagName ? this.cloneTreeData : this.viewTreeData
+    },
+    labelReg () {
+      return this.tagName ? RegExp(`${this.tagName}`) : ''
+    }
   },
   mounted() {
     this.pageInit()
@@ -76,9 +100,31 @@ export default {
       })
     },
     handleNodeClick(data) {
+      console.log('data', data)
       this.$emit('getViewInfo', {
         viewId: data.__view_id
       })
+    },
+    handleSearchTag() {
+      if (this.tagName) {
+        const data = JSON.parse(JSON.stringify(this.viewTreeData))
+        const matchData = this.matchViewTreeData(data)
+        // console.log('matchData', matchData)
+        this.$set(this, 'cloneTreeData', matchData)
+      }
+    },
+    matchViewTreeData(data) {
+      const that = this
+      return data.map(item => {
+        return item.children && item.children.length ? {
+          ...item, 
+          label: that.labelReg.test(item.label) ? item.label.replace(that.labelReg, `<mark>${that.tagName}</mark>`) : item.label,
+          children: that.matchViewTreeData(item.children)
+        } : {
+          ...item, 
+          label: that.labelReg.test(item.label) ? item.label.replace(that.labelReg, `<mark>${that.tagName}</mark>`) : item.label
+        }
+      }) 
     }
   }
 };
