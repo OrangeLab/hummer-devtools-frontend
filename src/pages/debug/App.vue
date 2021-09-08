@@ -17,7 +17,11 @@
           :name="item.tenonId + ''"
           style="height:100%;"
           lazy>
-          <TabPaneContent :tenonId="item.tenonId" @getViewTree="getViewTree" @getViewInfo="getViewInfo"/>
+          <TabPaneContent 
+            :tenonId="item.tenonId" 
+            @getViewTree="getViewTree" 
+            @getViewInfo="getViewInfo"
+            @setViewStyle="setViewStyle"/>
         </el-tab-pane>
       </el-tabs>
       <console-pan :toolsContainerStyle="toolsContainerStyle"></console-pan>
@@ -130,6 +134,13 @@ export default {
             params
           }
           break;
+        case 'setViewStyle':
+          data = {
+            type: 'view',
+            method: 'setViewStyle',
+            params
+          }
+          break;
         default:
           break;
       }
@@ -140,6 +151,9 @@ export default {
     },
     getViewInfo(data) {
       this.sendMsgToServer('getViewInfo', data)
+    },
+    setViewStyle(data) {
+      this.sendMsgToServer('setViewStyle', data)
     },
     handleClick(name) {
       console.log('handleClick', name)

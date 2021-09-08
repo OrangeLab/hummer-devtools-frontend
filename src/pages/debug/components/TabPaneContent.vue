@@ -4,7 +4,7 @@
     
     <TreeView :tenonId="tenonId" @getViewInfo="getViewInfo" />
     
-    <ViewInfo :currentViewInfo="currentViewInfo" />
+    <ViewInfo :currentViewInfo="currentViewInfo" @setViewStyle="setViewStyle" />
   </div>
 
 </template>
@@ -61,6 +61,16 @@ export default {
     pageInit() {
       Event.$on('mouse-up-event', resizing => {
         this.resizing = resizing
+      })
+    },
+    setViewStyle() {
+      // Todo 模拟数据
+      this.$emit('setViewStyle', {
+        tenonId: this.tenonId,
+        style: {
+          backgroundColor: 'red',
+        },
+        viewId: 1
       })
     }
   },

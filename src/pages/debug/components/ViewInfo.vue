@@ -1,6 +1,7 @@
 <template>
   <div class="containers" :class="{ resizing }" :style="style">
     <div class="col-title">ViewInfo</div>
+    <button @click="handleStyle">测试样式</button>
     <el-collapse v-model="activeCollapseNames">
       <el-collapse-item title="RectInfo" name="1" v-if="currentViewInfo.rect">
         <div class="info-item" v-for="(value, key) in currentViewInfo.rect" :key="key">
@@ -70,6 +71,9 @@ export default {
           ...style
         }
       })
+    },
+    handleStyle() {
+      this.$emit('setViewStyle')
     }
   }
 };
