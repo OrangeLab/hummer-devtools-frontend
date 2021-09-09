@@ -43,6 +43,9 @@ export default {
     currentViewInfo() {
       return this.pageInfoMap[this.tenonId] && this.pageInfoMap[this.tenonId].currentViewInfo || {}
     },
+    currentViewId() {
+      return this.pageInfoMap[this.tenonId] && this.pageInfoMap[this.tenonId].currentViewInfo && this.pageInfoMap[this.tenonId].currentViewInfo.viewId || ''
+    }
   },
   created() {
     this.$emit('getViewTree', this.tenonId)
@@ -63,14 +66,12 @@ export default {
         this.resizing = resizing
       })
     },
-    setViewStyle() {
-      // Todo 模拟数据
+    setViewStyle(style) {
+      const viewId = this.currentViewId
       this.$emit('setViewStyle', {
         tenonId: this.tenonId,
-        style: {
-          backgroundColor: 'red',
-        },
-        viewId: 1
+        style,
+        viewId 
       })
     }
   },

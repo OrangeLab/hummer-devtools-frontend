@@ -54,7 +54,8 @@ const mutations = {
       currentViewInfo: {
         rect: msg.params.rect,
         style: msg.params.style,
-        className:  msg.params.className
+        className:  msg.params.className,
+        viewId: msg.params.viewId
       }
     })
   },

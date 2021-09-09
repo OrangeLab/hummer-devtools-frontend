@@ -106,6 +106,10 @@ export default {
               console.log('updateLogList', typeof msg)
               that.$store.commit('updateLogList', msg)
               break;
+            case 'setStyleSuccess':
+              console.log('setStyleSuccess', typeof msg)
+              this.$message.success('修改样式成功~')
+              break;
             default:
               break;
           }
