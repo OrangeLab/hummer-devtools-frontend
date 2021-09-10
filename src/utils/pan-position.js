@@ -10,13 +10,13 @@ export default (pans, pan) => {
   if (pan === 'tree') {
     return {
       left: "20%",
-      right: "20%",
+      right: "25%",
     }
   }
 
   if (pan === 'view') {
     return {
-      left: "80%",
+      left: "75%",
       right: 0,
     }
   }

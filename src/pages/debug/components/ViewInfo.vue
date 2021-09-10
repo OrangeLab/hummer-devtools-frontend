@@ -9,20 +9,30 @@
         </div>
       </el-collapse-item>
       <el-collapse-item title="Style" name="2" v-if="currentViewStyles">
-        <el-row class="info-item" v-for="(item, index) in currentViewStyles" :key="index">
+        <el-row class="style-item" v-for="(item, index) in currentViewStyles" :key="index">
           <el-col :span="8">
             <span v-if="!item.keyEditable" class="item-key" >{{ item.key }}</span>
-            <el-input v-else class="item-value" v-model="item.key"></el-input>
+            <el-input v-else class="item-input" v-model="item.key"></el-input>
           </el-col>
-          <el-col :span="8">
+          <el-col :span="6" :offset="1">
             <span v-if="!item.valEditable" class="item-value" >{{ item.value }}</span>
-            <el-input v-else class="item-value" v-model="item.value"></el-input>
+            <el-input v-else class="item-input" v-model="item.value"></el-input>
           </el-col>
-          <el-col :span="8">
+          <el-col :span="8" :offset="1">
             <el-button
               type="primary"
-              :icon="item.valEditable?'el-icon-check':'el-icon-edit'" size="mini" circle @click="handleStyleItem('edit', index, item)"></el-button>
-            <el-button type="primary" icon="el-icon-minus" size="mini" circle @click="handleStyleItem('minus', index, item)"></el-button>
+              :icon="item.valEditable ? 'el-icon-check':'el-icon-edit'" 
+              size="mini" 
+              circle 
+              @click="handleStyleItem('edit', index, item)">
+            </el-button>
+            <el-button 
+              type="primary" 
+              icon="el-icon-minus" 
+              size="mini" 
+              circle 
+              @click="handleStyleItem('minus', index, item)">
+            </el-button>
             <el-button v-if="currentViewStyles.length - 1 === index" type="primary" icon="el-icon-plus" size="mini" circle @click="handleStyleItem('plus', index, item)"></el-button>
           </el-col>
         </el-row>
@@ -146,6 +156,18 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
+<style scoped lang="less">
   @import "@/styles/common.scss";
+  .style-item {
+    display: flex;
+    align-items: center;
+    height: 38px;
+    line-height: 38px;
+  }
+  .item-input {
+    /deep/.el-input__inner {
+      height: 38px;
+      line-height: 38px;
+    }
+  }
 </style>
