@@ -1,0 +1,35 @@
+.containers {
+  position: absolute;
+  height: 100%;
+  padding: 5px;
+  overflow-y: scroll;
+  top: 0;
+  bottom: 0;
+  box-sizing: border-box;
+  border-right: 1px solid gainsboro;
+  &:nth-child(3) {
+    border: none
+  }
+  &.resizing {
+    cursor: col-resize;
+  }
+}
+.col-title{
+  font-size: 24px;
+  color: #409EFF;
+}
+.info-item{
+  display: flex;
+  padding: 5px;
+  span{
+    display: inline-block;
+    color: #909399;
+    font-size: 12px;
+  }
+  .item-key{
+    width: 140px;
+  }
+  .item-value{
+    width: 140px;
+  }
+}

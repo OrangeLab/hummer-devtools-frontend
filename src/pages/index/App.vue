@@ -56,6 +56,7 @@ export default {
     codeLoading: false
   }),
   mounted() {
+    console.log('是否生效')
     this.xhr('./fileList', (res) => {
       this.srcList = [...res.data]
       if (this.srcList.length) {
