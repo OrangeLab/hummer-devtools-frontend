@@ -1,61 +1,60 @@
 <template>
-  <el-container 
-    direction="vertical"
-    
-  >
-    <div 
-      class="debug-tools-container"
-      
-    >
+  <el-container direction="vertical">
+    <div class="debug-tools-container">
       <el-tabs 
         v-model="currentShowPage"
         type="card"
         id="tree-view-container"
-        :style="treeViewContainerStyle"
+        :style="style"
         v-loading="pageList.length === 0"
         element-loading-text="等待runtime devtools scoket连接"
-        element-loading-spinner="el-icon-loading">
+        element-loading-spinner="el-icon-loading"
+        >
         <el-tab-pane
           :key="item.tenonId"
           v-for="item in pageList"
           :label="'Page-'+ item.tenonId"
           :name="item.tenonId + ''"
           style="height:100%;"
-          lazy
-        >
-          <ViewTree :tenonId="item.tenonId" @getViewTree="getViewTree" @getViewInfo="getViewInfo"/>
+          lazy>
+          <TabPaneContent 
+            :tenonId="item.tenonId" 
+            @getViewTree="getViewTree" 
+            @getViewInfo="getViewInfo"
+            @setViewStyle="setViewStyle"/>
         </el-tab-pane>
       </el-tabs>
-      <el-tabs type="border-card" v-model="currentTool" id="tools-container" :style="toolsContainerStyle">
-        <el-tab-pane label="CONSOLE" name="console" style="height:100%;">
-          <Console/>
-        </el-tab-pane>
-        <el-tab-pane label="MEMORY" name="memory" style="height:100%;">在做了(新建文件夹</el-tab-pane>
-      </el-tabs>
+      <console-pan :toolsContainerStyle="toolsContainerStyle"></console-pan>
     </div>
   </el-container>
 </template>
 
 <script>
-import Console from './components/Console.vue'
-import ViewTree from './components/ViewTree.vue'
+import ConsolePan from './components/ConsolePan.vue'
+import TabPaneContent from './components/TabPaneContent.vue'
 import { mapState } from 'vuex'
-
+import Event from '@/utils/event'
 export default {
   name: "App",
   components: {
-    Console,
-    ViewTree
+    TabPaneContent,
+    ConsolePan
   },
   data: () => ({
     currentShowPage: '',
     model: '0',
     tab: '',
     codeLoading: false,
-    currentTool: 'console',
     toolsContainerHeight: 400,
-    clientSocket: null
+    clientSocket: null,
+    defaultActivePage: {},
+    style: {}
   }),
+  watch: {
+    currentShowPage (val) {
+      console.log('currentShowPage', val)
+    }
+  },
   computed: {
     ...mapState({
       pageList: state => state.pageList
@@ -63,12 +62,10 @@ export default {
     toolsContainerStyle() {
       return `height: ${this.toolsContainerHeight}px;`
     },
-    treeViewContainerStyle() {
-      return `height: calc(100% - ${this.toolsContainerHeight}px);`
-    }
   },
   mounted() {
     this.handleWebSocket()
+    this.styleInit()
   },
   methods: {
     handleWebSocket() {
@@ -89,6 +86,10 @@ export default {
           switch (msg.method) {
             case 'setPageList':
               that.$store.commit('updatePageList', msg)
+              if (msg.params.pageList && msg.params.pageList.length) {
+                that.$set(that, 'defaultActivePage', msg.params.pageList[0])
+                that.currentShowPage = that.defaultActivePage.tenonId + ''
+              }
               break;
             case 'setViewTree':
               that.$store.commit('updatePageInfoMap', msg)
@@ -104,6 +105,10 @@ export default {
             case 'updateLogList':
               console.log('updateLogList', typeof msg)
               that.$store.commit('updateLogList', msg)
+              break;
+            case 'setStyleSuccess':
+              console.log('setStyleSuccess', typeof msg)
+              this.$message.success('修改样式成功~')
               break;
             default:
               break;
@@ -133,6 +138,13 @@ export default {
             params
           }
           break;
+        case 'setViewStyle':
+          data = {
+            type: 'view',
+            method: 'setViewStyle',
+            params
+          }
+          break;
         default:
           break;
       }
@@ -143,6 +155,21 @@ export default {
     },
     getViewInfo(data) {
       this.sendMsgToServer('getViewInfo', data)
+    },
+    setViewStyle(data) {
+      this.sendMsgToServer('setViewStyle', data)
+    },
+    handleClick(name) {
+      console.log('handleClick', name)
+    },
+    styleInit() {
+      Event.$on(`set-tab-pan-style`, style => {
+        this.style = {
+          ...this.style,
+          ...style
+        }
+      })
+      this.style = { height: `calc(100% - ${this.toolsContainerHeight}px)` }
     }
   } 
 };
@@ -161,5 +188,9 @@ html, body{
   .el-tabs__content{
     height: calc(100% - 70px);
   }
+}
+.drag-down {
+  resize: vertical;
+  overflow: scroll;
 }
 </style>

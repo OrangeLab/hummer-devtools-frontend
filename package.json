@@ -1,8 +1,8 @@
 {
   "name": "@hummer/devtools-frontend",
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0-alpha.2",
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "dev": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
@@ -10,6 +10,11 @@
     "registry": "https://registry.npmjs.org/",
     "access": "public"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OrangeLab/hummer-devtools-frontend"
+  },
+  "license": "ISC",
   "dependencies": {
     "core-js": "^3.6.5",
     "element-ui": "^2.15.3",
