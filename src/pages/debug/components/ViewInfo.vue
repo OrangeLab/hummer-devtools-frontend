@@ -1,6 +1,9 @@
 <template>
   <div class="containers" :class="{ resizing }" :style="style">
-    <div class="col-title">ViewInfo</div>
+    <div class="col-title flex">
+      <div class="col-title-text">ViewInfo</div>
+      <UnitTipPopover placement="right"></UnitTipPopover>
+    </div>
     <el-collapse v-model="activeCollapseNames">
       <el-collapse-item title="RectInfo" name="1" v-if="currentViewInfo.rect">
         <div class="info-item" v-for="(value, key) in currentViewInfo.rect" :key="key">
@@ -50,6 +53,7 @@
 import { mapState } from 'vuex'
 import Event from '@/utils/event'
 import panPosition from '@/utils/pan-position'
+import UnitTipPopover from './UnitTipPopover'
 export default {
   props: {
     resizing: Boolean,
@@ -63,6 +67,7 @@ export default {
     }
   },
   components: {
+    UnitTipPopover,
   },
   data() {
     return {
@@ -168,6 +173,13 @@ export default {
     /deep/.el-input__inner {
       height: 38px;
       line-height: 38px;
+    }
+  }
+  .flex{
+    display: flex;
+    align-items: center;
+    .col-title-text{
+      margin-right: auto;
     }
   }
 </style>

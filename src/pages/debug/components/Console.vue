@@ -22,14 +22,31 @@
       </el-form>
       <div class="log-container">
         <div v-for="(logItem, index) in logList" :class="'log-' + logMap[logItem.level]" :key="index" >
-          {{logItem.message}}
+          <template v-if="isObject(logItem.message)">
+            <div v-if="objectOpen">
+              {{logItem.message}}<Detail :detailValue="getMessageObject(logItem.message)" :detailIndex="index"></Detail>
+            </div>
+            <div v-else>
+              {{logItem.message}}<el-tree :data="stringToTreeArr(logItem.message)" :props="defaultProps"></el-tree>
+            </div>
+          </template>
+          <template v-else >
+            <div>
+              {{logItem.message}}
+            </div>
+          </template>
         </div>
       </div>
 
   </div>
 </template>
 <script>
+import Detail from './logDetail'
+import { getUrlParam } from '../../../utils/index'
 export default {
+  components: {
+    Detail
+  },
   data() {
     return {
       logMap: {
@@ -59,7 +76,12 @@ export default {
         label: 'EXCEPTION'
       }],
       logLevel: '',
-      keyword: ''
+      keyword: '',
+      defaultProps: {
+        children: 'children',
+        label: 'label'
+      },
+      objectOpen: getUrlParam('objectOpenType'),
     }
   },
   computed: {
@@ -76,14 +98,81 @@ export default {
           return logItem.message.indexOf(this.keyword) > -1
         })
       }
-
+      console.log(logList);
       return logList
     }
   },
   methods: {
     clearLog() {
       this.$store.commit('clearLogList')
-    }
+    },
+    stringToTreeArr(val) {
+        let message = this.getMessageObject(val);
+        let data,treeArr;
+        data = this.transformToTreeData(message)
+        treeArr = [{
+          label:val,
+          children:data,
+        }]
+        return treeArr;
+    },
+    getMessageObject(val){
+      try {
+        let message = JSON.parse(val.split(' ')[1]);
+        return message
+      } catch (error) {
+        return {}
+      }
+    },
+    transformToTreeData(obj) {
+      const treeArr = [];
+      if (typeof obj === 'object') {
+        for (const key in obj) {
+          if (Object.prototype.hasOwnProperty.call(obj, key)) {
+            if (Object.prototype.toString.call(obj[key]) === '[object Array]') {
+              const arr = obj[key];
+              const children = [];
+              for (let i = 0; i < arr.length; i++) {
+                const arrItem = arr[i];
+                children.push({
+                  label: i,
+                  children: this.transformToTreeData(arrItem)
+                });
+              }
+              const item = {
+                label: `${key}：Array(${arr.length})`,
+                children
+              };
+              treeArr.push(item);
+            } else if (
+              Object.prototype.toString.call(obj[key]) === '[object Object]'
+            ) {
+              const item = {
+                label: key,
+                children: this.transformToTreeData(obj[key])
+              };
+              treeArr.push(item);
+            } else {
+              const val = key + ' : ' + obj[key];
+              treeArr.push({ label: val });
+            }
+          }
+        }
+      } else {
+        treeArr.push({
+          label: obj
+        });
+      }
+      return treeArr;
+    },
+    isObject(val) {
+      try {
+        let newVal = JSON.parse(val.split(' ')[1]);
+        return Object.prototype.toString.call(newVal) === '[object Object]';
+      } catch (error) {
+        return false;
+      }
+    },
   },
 }
 </script>
