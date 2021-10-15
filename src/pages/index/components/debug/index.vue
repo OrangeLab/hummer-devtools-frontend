@@ -1,6 +1,6 @@
 <template>
   <el-container direction="vertical">
-    <div class="debug-tools-container">
+    <div class="debug-tools-container" v-if="!newUser">
       <el-tabs 
         v-model="currentShowPage"
         type="card"
@@ -26,19 +26,22 @@
       </el-tabs>
       <console-pan :toolsContainerStyle="toolsContainerStyle"></console-pan>
     </div>
+    <Empty v-else-if="pageList.length === 0 && newUser"></Empty>
   </el-container>
 </template>
 
 <script>
 import ConsolePan from './components/ConsolePan.vue'
 import TabPaneContent from './components/TabPaneContent.vue'
+import Empty from './components/Empty.vue'
 import { mapState } from 'vuex'
 import Event from '@/utils/event'
 export default {
   name: "App",
   components: {
     TabPaneContent,
-    ConsolePan
+    ConsolePan,
+    Empty,
   },
   data: () => ({
     currentShowPage: '',
@@ -48,12 +51,13 @@ export default {
     toolsContainerHeight: 400,
     clientSocket: null,
     defaultActivePage: {},
-    style: {}
+    style: {},
+    newUser: true,
   }),
   watch: {
     currentShowPage (val) {
       console.log('currentShowPage', val)
-    }
+    },
   },
   computed: {
     ...mapState({
@@ -85,6 +89,7 @@ export default {
           
           switch (msg.method) {
             case 'setPageList':
+              msg.params?.pageList?.length && (this.newUser = false);
               that.$store.commit('updatePageList', msg)
               if (msg.params.pageList && msg.params.pageList.length) {
                 that.$set(that, 'defaultActivePage', msg.params.pageList[0])
@@ -185,6 +190,7 @@ html, body{
 }
 .debug-tools-container{
   height: 100%;
+  position: relative;
   .el-tabs__content{
     height: calc(100% - 70px);
   }
@@ -192,5 +198,8 @@ html, body{
 .drag-down {
   resize: vertical;
   overflow: scroll;
+}
+.index-main{
+    position: relative;
 }
 </style>
