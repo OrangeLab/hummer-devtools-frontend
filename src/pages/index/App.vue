@@ -44,6 +44,7 @@
         element-loading-text="拼命加载中"
         element-loading-spinner="el-icon-loading"
         class="index-main"
+        id="index-main"
       >
           <!-- <highlightjs autodetect :code="currentCode" class="code" /> -->
           <debug></debug>

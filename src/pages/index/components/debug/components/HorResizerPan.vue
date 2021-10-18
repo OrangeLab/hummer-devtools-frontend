@@ -54,7 +54,8 @@ export default {
     handleMouseMove(e) {
       if (this.resizing) {
         e.preventDefault()
-        const newCurrentPanHeight = window.innerHeight - e.clientY
+        const parentHeight = document.getElementById('index-main')
+        const newCurrentPanHeight = parentHeight.offsetHeight - e.clientY
         const newPrePanHeight = e.clientY
         // TODO 定义阀值
         this.updateCurrentPan({ height: `${newCurrentPanHeight}px` })

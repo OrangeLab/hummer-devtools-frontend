@@ -5,6 +5,7 @@
         <Console/>
       </el-tab-pane>
       <el-tab-pane label="MEMORY" name="memory" style="height:100%;">在做了(新建文件夹</el-tab-pane>
+      <el-tab-pane label="NETWORK" name="network" style="height:100%;">请求拦截</el-tab-pane>
     </el-tabs>
     <hor-resizer-pan pan="console"></hor-resizer-pan>
   </div>

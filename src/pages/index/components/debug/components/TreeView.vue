@@ -26,12 +26,7 @@
           <span v-text="'>'"></span>
         </span>
         <span v-if="data.name == 'text'">{{ data.text }}</span>
-        <el-image 
-          v-if="data.name == 'image'"
-          style="width: 100px; height: 40px"
-          :src="data.src" 
-          :preview-src-list="[data.src]">
-        </el-image>
+        <TreeViewImage v-if="data.name == 'image'" :imgUrl="data.src" ></TreeViewImage>
       </div>
     </el-tree>
     <VerResizerPan pan="tree" />
@@ -41,6 +36,7 @@
 <script>
 import { mapState } from 'vuex'
 import VerResizerPan from './VerResizerPan'
+import TreeViewImage from './TreeViewImage'
 import panPosition from '@/utils/pan-position'
 import Event from '@/utils/event'
 export default {
@@ -53,7 +49,8 @@ export default {
     tenonId: Number
   },
   components: {
-    VerResizerPan
+    VerResizerPan,
+    TreeViewImage
   },
   data() {
     return {

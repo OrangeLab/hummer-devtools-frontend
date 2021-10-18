@@ -14,28 +14,28 @@
       <el-collapse-item title="Style" name="2" v-if="currentViewStyles">
         <el-row class="style-item" v-for="(item, index) in currentViewStyles" :key="index">
           <el-col :span="8">
-            <span v-if="!item.keyEditable" class="item-key" >{{ item.key }}</span>
-            <el-input v-else class="item-input" v-model="item.key"></el-input>
+            <!-- <span v-if="!item.keyEditable" class="item-key" >{{ item.key }}</span> -->
+            <el-input class="item-input" :class="{'item-input-active':item.keyEditable}" v-model="item.key" @click.native="handleStyleItem('editKey', index, item)" @focus="$event.target.select()" @blur="keyEditblur('keyEditable', index, item)"></el-input>
           </el-col>
           <el-col :span="6" :offset="1">
-            <span v-if="!item.valEditable" class="item-value" >{{ item.value }}</span>
-            <el-input v-else class="item-input" v-model="item.value"></el-input>
+            <!-- <span v-if="!item.valEditable" class="item-value" >{{ item.value }}</span> -->
+            <el-input class="item-input" :class="{'item-input-active':item.valEditable}" v-model="item.value" @click.native="handleStyleItem('editValue', index, item)" @focus="$event.target.select()" @blur="keyEditblur('valEditable', index, item)"></el-input>
           </el-col>
           <el-col :span="8" :offset="1">
-            <el-button
+            <!-- <el-button
               type="primary"
               :icon="item.valEditable ? 'el-icon-check':'el-icon-edit'" 
               size="mini" 
               circle 
               @click="handleStyleItem('edit', index, item)">
-            </el-button>
-            <el-button 
+            </el-button> -->
+            <!-- <el-button 
               type="primary" 
               icon="el-icon-minus" 
               size="mini" 
               circle 
               @click="handleStyleItem('minus', index, item)">
-            </el-button>
+            </el-button> -->
             <el-button v-if="currentViewStyles.length - 1 === index" type="primary" icon="el-icon-plus" size="mini" circle @click="handleStyleItem('plus', index, item)"></el-button>
           </el-col>
         </el-row>
@@ -75,6 +75,8 @@ export default {
       pan: 'view',
       activeCollapseNames: ['1', '2', '3'],
       currentViewStyles: [],
+      lastTimeCurrentViewStyles: [],
+      originalCurrentViewStyles: [],
       primitiveStyle: {
         key: '',
         value: '',
@@ -111,6 +113,7 @@ export default {
             }
           }
           this.$set(this, 'currentViewStyles', arr)
+          this.lastTimeCurrentViewStyles = JSON.parse(JSON.stringify(this.currentViewStyles));
         }
       },
       deep: true,
@@ -131,24 +134,53 @@ export default {
         // Todo: 校验合法性
         style[item.key] = item.value
       })
-      this.$emit('setViewStyle', style)
+      if(JSON.stringify(this.lastTimeCurrentViewStyles) !== JSON.stringify(this.currentViewStyles)) {
+        this.lastTimeCurrentViewStyles = JSON.parse(JSON.stringify(this.currentViewStyles));
+        this.$emit('setViewStyle', style)
+      }
+    },
+    keyEditfocus() {
+      console.log('keyEditfocus')
+    },
+    keyEditblur(type, index, styleItem) {
+      styleItem[type] = false
+      if(styleItem.key.trim() === '' || styleItem.value.trim() === '') {
+        this.currentViewStyles.splice(index, 1)
+      }
+      this.setViewStyle()
     },
     handleStyleItem(type, index, styleItem) {
-      if (type == 'edit') {
-        if (
-          (styleItem.valEditable && styleItem.keyEditable)
-          || (styleItem.valEditable && !styleItem.keyEditable)
-        ) {
-          styleItem.valEditable = false
-          styleItem.keyEditable = false
-          this.setViewStyle()
-        } else {
+      console.log(type, index, styleItem)
+      // if (type == 'edit') {
+      //   if (
+      //     (styleItem.valEditable && styleItem.keyEditable)
+      //     || (styleItem.valEditable && !styleItem.keyEditable)
+      //   ) {
+      //     styleItem.valEditable = false
+      //     styleItem.keyEditable = false
+      //     this.setViewStyle()
+      //   } else {
+      //     styleItem.valEditable = true
+      //   }
+      // } else if (type == 'minus') {
+      //   this.currentViewStyles.splice(index, 1)
+      //   this.setViewStyle()
+      // } else if (type == 'plus') {
+      //   const styleItem = Object.assign({}, this.primitiveStyle,
+      //   {
+      //     keyEditable: true,
+      //     valEditable: true
+      //   })
+      //   this.currentViewStyles.push(styleItem)
+      // }
+      if (type === 'editKey') {
+          styleItem.keyEditable = true
+      } else if(type === 'editValue') {
           styleItem.valEditable = true
-        }
-      } else if (type == 'minus') {
+      } else if (type === 'minus') {
         this.currentViewStyles.splice(index, 1)
         this.setViewStyle()
-      } else if (type == 'plus') {
+      } else if (type === 'plus') {
         const styleItem = Object.assign({}, this.primitiveStyle,
         {
           keyEditable: true,
@@ -173,6 +205,12 @@ export default {
     /deep/.el-input__inner {
       height: 38px;
       line-height: 38px;
+      border: none;
+    }
+    &-active{
+      /deep/.el-input__inner {
+        border: 1px solid #DCDFE6;
+      }
     }
   }
   .flex{

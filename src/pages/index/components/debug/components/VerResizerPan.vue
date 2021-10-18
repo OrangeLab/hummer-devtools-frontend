@@ -68,7 +68,8 @@ export default {
     handleMouseMove(e) {
       if (this.resizing) {
         e.preventDefault()
-        const newNextPanLeft = e.clientX / window.innerWidth * 100
+        const parentHeight = document.getElementById('index-main');
+        const newNextPanLeft = (e.clientX - parentHeight.offsetLeft) / parentHeight.offsetWidth * 100
         if (
             (newNextPanLeft - this.originalCurrentPanLeft > 5) &&
             (100 - newNextPanLeft - this.originalNextPanRight > 5)
