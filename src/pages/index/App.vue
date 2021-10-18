@@ -1,38 +1,43 @@
 <template>
     <div class="index-container">
-      <div class="index-aside">
-        <div>
-          <el-image
-            style="width: 200px;"
-            src="//pt-starimg.didistatic.com/static/starimg/img/9E6O0ZOwok1604372834424.png"
-            fit="fit">
-          </el-image>
-        </div>
-        <div style="height:calc(100% - 450px);overflow-y:scroll;">
-          
-          <el-menu
-            :default-active="model"
-          >
-            <el-menu-item :index="index + ''" v-for="(item, index) in srcList" :key="item" @click="selectItem(index)">
-              <span slot="title">{{item}}</span>
-            </el-menu-item>
-          </el-menu>
-        </div>
-        <div style="text-align:center;height:300px;">
-          <el-divider><i class="el-icon-mobile-phone"></i></el-divider>
-          <a class="qrcode" id="qrcode" target="_blank"></a>
-          <div>
-            使用
-            <a href="https://page.xiaojukeji.com/m/ddPage_0szxLMtT.html" target="_blank">
-              <el-button type="success" size="mini" plain round>Hummer Playground</el-button>
-            </a>
-            扫码
+      <div class="index-aside-box">
+        <div :class="`index-aside ${isPutAway?'aside-put-away':''}`">
+          <div class="img-box">
+            <el-image
+              style="width: 200px;"
+              src="//pt-starimg.didistatic.com/static/starimg/img/9E6O0ZOwok1604372834424.png"
+              fit="fit">
+            </el-image>
           </div>
-          <el-divider></el-divider>
-          <a href="debug.html" target="_blank">
-            <el-button type="info" size="mini" plain round><i class="el-icon-cpu"></i> 开启调试</el-button>
-          </a>
+          <div style="height:calc(100% - 450px);overflow-y:scroll;">
+            
+            <el-menu
+              :default-active="model"
+            >
+              <el-menu-item :index="index + ''" v-for="(item, index) in srcList" :key="item" @click="selectItem(index)">
+                <span slot="title">{{item}}</span>
+              </el-menu-item>
+            </el-menu>
+          </div>
+          <div style="text-align:center;height:300px;">
+            <el-divider><i class="el-icon-mobile-phone"></i></el-divider>
+            <a class="qrcode" id="qrcode" target="_blank"></a>
+            <div>
+              使用
+              <a href="https://page.xiaojukeji.com/m/ddPage_0szxLMtT.html" target="_blank">
+                <el-button type="success" size="mini" plain round>Hummer Playground</el-button>
+              </a>
+              扫码
+            </div>
+            <el-divider></el-divider>
+            <!-- <a href="debug.html" target="_blank">
+              <el-button type="info" size="mini" plain round><i class="el-icon-cpu"></i> 开启调试</el-button>
+            </a> -->
+          </div>
+          
         </div>
+        <div class="put-away" @click="putAway(true)" v-if="!isPutAway">收起<i class="el-icon-s-fold"></i></div>
+        <div class="put-away" @click="putAway(false)" v-else>展开<i class="el-icon-s-unfold"></i></div>
       </div>
       <div
         v-loading="codeLoading"
@@ -40,20 +45,25 @@
         element-loading-spinner="el-icon-loading"
         class="index-main"
       >
-          <highlightjs autodetect :code="currentCode" class="code" />
+          <!-- <highlightjs autodetect :code="currentCode" class="code" /> -->
+          <debug></debug>
       </div>
     </div>
 </template>
 
 <script>
+import debug from './components/debug/index.vue'
 export default {
   name: "App",
-
+  components: {
+    debug,
+  },
   data: () => ({
     srcList: [],
     model: '',
     currentCode: '',
-    codeLoading: false
+    codeLoading: false,
+    isPutAway: false,
   }),
   mounted() {
     console.log('是否生效')
@@ -66,6 +76,9 @@ export default {
     })
   },
   methods: {
+      putAway(val) {
+        this.isPutAway = val;
+      },
       xhr(url, callback) {
         var xhr = new XMLHttpRequest();
         xhr.open('get', url, true);
@@ -131,19 +144,43 @@ export default {
     display: flex;
     height: 100vh;
   }
+  .index-aside-box{
+    position: relative;
+    margin: 10px 20px 10px 0;
+    .put-away{
+      position: absolute;
+      font-size:13px;
+      background: #fff;
+      padding: 4px;
+      padding-right: 2px;
+      border-radius: 0 5px 5px 0;
+      width: 15px;
+      top: 30px;
+      right: -19px;
+    }
+  }
   .index-aside{
-    margin: 10px 10px 10px 0;
     background-color: #ffffff;
     box-sizing: border-box;
-    height: calc(100% - 20px);
-    min-width: 256px;
+    height: 100%;
+    width: 256px;
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
+    position: relative;
+    transition: all 0.3s;
+    overflow: hidden;
+    flex-shrink: 0;
+    .img-box{
+      width: 256px;
+    }
+  }
+  .aside-put-away{
+    width: 0px;
   }
   .index-main{
     margin: 10px;
     padding: 10px;
-    padding-top: 0;
+    // padding-top: 0;
     height: calc(100% -20px);
     width: 100%;
     box-sizing: border-box;
