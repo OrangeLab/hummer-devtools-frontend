@@ -7,6 +7,7 @@ Vue.use(Vuex)
 
 const state = () => ({
   logList: [],
+  netWorkList: [],
   pageList: [],
   pageInfoMap: {},
   defaultActivePage: {},
@@ -26,6 +27,13 @@ const actions = {
 
 // mutations
 const mutations = {
+  updateNetWorkList (state, msg) {
+    console.log(msg)
+    state.netWorkList.push(msg)
+  },
+  clearNetWorkList (state) {
+    state.netWorkList = []
+  },
   updateLogList (state, msg) {
     console.log(msg)
     state.logList.push(msg.params)
@@ -40,7 +48,6 @@ const mutations = {
     }
   },
   updatePageInfoMap (state, msg) {
-    console.log(1111111)
     Vue.set(state.pageInfoMap, msg.params.tenonId, {
       
       viewTree: msg.params.viewTree,
