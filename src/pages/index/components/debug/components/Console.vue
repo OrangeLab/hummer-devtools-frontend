@@ -31,8 +31,7 @@
             </div> -->
           </template>
           <template v-else >
-            <div>
-              {{logItem.message}}
+            <div v-html="formatWrap(logItem.message)">
             </div>
           </template>
         </div>
@@ -103,6 +102,9 @@ export default {
     }
   },
   methods: {
+    formatWrap(val) {
+      return val.replace(/\n/g, '<br>');
+    },
     clearLog() {
       this.$store.commit('clearLogList')
     },
