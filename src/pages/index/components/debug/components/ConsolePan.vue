@@ -4,8 +4,10 @@
       <el-tab-pane label="CONSOLE" name="console" style="height:100%;">
         <Console/>
       </el-tab-pane>
+      <el-tab-pane label="NETWORK" name="network" style="height:100%;">
+        <Network/>
+      </el-tab-pane>
       <el-tab-pane label="MEMORY" name="memory" style="height:100%;">在做了(新建文件夹</el-tab-pane>
-      <el-tab-pane label="NETWORK" name="network" style="height:100%;">请求拦截</el-tab-pane>
     </el-tabs>
     <hor-resizer-pan pan="console"></hor-resizer-pan>
   </div>
@@ -14,6 +16,7 @@
 <script>
 import { mapActions } from 'vuex'
 import Console from './Console.vue'
+import Network from './Network.vue'
 import HorResizerPan from './HorResizerPan.vue'
 import Event from '@/utils/event'
 export default {
@@ -25,7 +28,8 @@ export default {
   },
   components: {
     Console,
-    HorResizerPan
+    HorResizerPan,
+    Network,
   },
   data() {
     return {
