@@ -64,7 +64,7 @@ export default {
   font-size: 12px;
   margin-left: 24px;
   position: relative;
-  
+  cursor: pointer;
 }
 .can-unfold {
   &::before{

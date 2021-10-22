@@ -31,8 +31,7 @@
             </div> -->
           </template>
           <template v-else >
-            <div>
-              {{logItem.message}}
+            <div v-html="formatWrap(logItem.message)">
             </div>
           </template>
         </div>
@@ -103,6 +102,9 @@ export default {
     }
   },
   methods: {
+    formatWrap(val) {
+      return val.replace(/\n/g, '<br>');
+    },
     clearLog() {
       this.$store.commit('clearLogList')
     },
@@ -118,7 +120,7 @@ export default {
     // },
     getMessageObject(val){
       try {
-        let message = JSON.parse(val.split(' ')[1]);
+        let message = JSON.parse(val.slice(val.indexOf(' ') + 1));
         return message
       } catch (error) {
         return {}
@@ -167,7 +169,7 @@ export default {
     // },
     isObject(val) {
       try {
-        let newVal = JSON.parse(val.split(' ')[1]);
+        let newVal = JSON.parse(val.slice(val.indexOf(' ') + 1));
         return Object.prototype.toString.call(newVal) === '[object Object]';
       } catch (error) {
         return false;

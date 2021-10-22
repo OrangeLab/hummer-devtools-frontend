@@ -115,6 +115,10 @@ export default {
               console.log('setStyleSuccess', typeof msg)
               this.$message.success('修改样式成功~')
               break;
+            case 'updateNetWorkList':
+              console.log('updateNetWorkList', msg)
+              that.$store.commit('updateNetWorkList', msg)
+              break;
             default:
               break;
           }
@@ -193,6 +197,7 @@ html, body{
   position: relative;
   .el-tabs__content{
     height: calc(100% - 70px);
+    overflow: auto;
   }
 }
 .drag-down {

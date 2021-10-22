@@ -28,8 +28,16 @@ const actions = {
 // mutations
 const mutations = {
   updateNetWorkList (state, msg) {
-    console.log(msg)
-    state.netWorkList.push(msg)
+    const { requestInfo, responseInfo, id} = msg.params;
+    if (requestInfo) {
+      state.netWorkList.push(msg)
+    } else if(responseInfo) {
+      let index = state.netWorkList.findIndex(e => e.params.id === id)
+      let data = JSON.parse(JSON.stringify(state.netWorkList[index]))
+      data.params.responseInfo = responseInfo
+      Vue.set(state.netWorkList, index, data)
+    }
+    console.log(state.netWorkList)
   },
   clearNetWorkList (state) {
     state.netWorkList = []
