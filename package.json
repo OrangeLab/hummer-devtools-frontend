@@ -1,6 +1,6 @@
 {
   "name": "@hummer/devtools-frontend",
-  "version": "0.1.0-alpha.3",
+  "version": "0.1.0-alpha.4",
   "scripts": {
     "dev": "vue-cli-service serve",
     "build": "vue-cli-service build",
