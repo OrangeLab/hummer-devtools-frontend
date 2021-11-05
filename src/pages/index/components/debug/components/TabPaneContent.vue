@@ -16,7 +16,8 @@ import TreeView from './TreeView.vue'
 import ViewInfo from './ViewInfo.vue'
 export default {
   props: {
-    tenonId: [String, Number]
+    tenonId: [String, Number],
+    tenonIp: String
   },
   components: {
     PageInfo,
@@ -32,7 +33,8 @@ export default {
   },
   computed: {
     ...mapState({
-      pageInfoMap: state => state.pageInfoMap
+      pageInfoMap: state => state.pageInfoMap,
+      storageList: state => state.storageList
     }),
     viewTree() {
       return this.pageInfoMap[this.tenonId] && this.pageInfoMap[this.tenonId].viewTree || []
@@ -49,6 +51,9 @@ export default {
   },
   created() {
     this.$emit('getViewTree', this.tenonId)
+    if(!this.storageList[this.tenonIp]){
+      this.$emit('getStorage', this.tenonId, this.tenonIp)
+    }
   },
   mounted() {
     this.pageInit()

@@ -96,7 +96,6 @@ export default {
           item?.params?.responseInfo?.status
         );
       });
-      console.log("fyqfyqfyq", netWorkList);
       return netWorkList;
     },
   },
