@@ -1,7 +1,7 @@
 <template>
   <div class="storage-container">
     <el-table
-      :data="newStorageList"
+      :data="newStateList"
       border
       row-key="key"
       style="width: 100%"
@@ -51,11 +51,11 @@
       </el-table-column>
     </el-table>
     <el-dialog
-      title="Storage 新增"
+      :title="`${type} 新增`"
       append-to-body
       :visible.sync="dialogFormVisible"
     >
-      <el-form :model="form" :rules="rules" ref="storageAddForm">
+      <el-form :model="form" :rules="rules" :ref="`${type}AddForm`">
         <el-form-item label="key" prop="key" :label-width="formLabelWidth">
           <el-input v-model.trim="form.key"></el-input>
         </el-form-item>
@@ -65,7 +65,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="storageAdd">确 定</el-button>
+        <el-button type="primary" @click="submit">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -78,10 +78,11 @@ export default {
   components: {},
   props: {
     tenonIp: String,
+    type: String,
   },
   data() {
     return {
-      newStorageList: [],
+      newStateList: [],
       dialogFormVisible: false,
       formLabelWidth: "120px",
       form: {
@@ -95,15 +96,17 @@ export default {
     };
   },
   computed: {
-    ...mapState(["storageList"]),
+    stateList() {
+      return this.$store.state[`${this.type.toLowerCase()}List`];
+    },
   },
   watch: {
-    storageList: {
+    stateList: {
       deep: true,
       handler(val) {
         // localStorage.setItem("devToolStorage", JSON.stringify(val));
-        this.newStorageList = JSON.parse(JSON.stringify(val[this.tenonIp]));
-        this.newStorageList.forEach((item) => {
+        this.newStateList = JSON.parse(JSON.stringify(val[this.tenonIp]));
+        this.newStateList.forEach((item) => {
           item.keyEditable = false;
           item.valEditable = false;
         });
@@ -112,11 +115,9 @@ export default {
     tenonIp: {
       immediate: true,
       handler(val) {
-        if (this.storageList[val]) {
-          this.newStorageList = JSON.parse(
-            JSON.stringify(this.storageList[val])
-          );
-          this.newStorageList.forEach((item) => {
+        if (this.stateList[val]) {
+          this.newStateList = JSON.parse(JSON.stringify(this.stateList[val]));
+          this.newStateList.forEach((item) => {
             item.keyEditable = false;
             item.valEditable = false;
           });
@@ -125,21 +126,21 @@ export default {
     },
   },
   methods: {
-    storageAdd() {
-      this.$refs["storageAddForm"].validate((valid) => {
+    submit() {
+      this.$refs[`${this.type}AddForm`].validate((valid) => {
         if (valid) {
           const params = {
               tenonIp: this.tenonIp,
               key: this.form.key,
               value: this.form.value,
             },
-            storage = {
+            data = {
               key: this.form.key,
               value: this.form.value,
               type: "revise",
             };
-          this.$store.commit("updateStorageList", params);
-          this.$emit("setStorage", storage);
+          this.$store.commit(`update${this.type}List`, params);
+          this.$emit("setData", data);
           this.form.key = "";
           this.form.value = "";
           this.dialogFormVisible = false;
@@ -149,57 +150,60 @@ export default {
       });
     },
     handleDelete(index) {
-      this.newStorageList.splice(index, 1);
-      let storage = {
-        key: this.storageList[this.tenonIp][index].key,
+      const data = {
+        key: this.stateList[this.tenonIp][index].key,
         type: "delete",
       };
-      this.$store.commit("setStorageList", {
+      this.newStateList.splice(index, 1);
+      this.$store.commit(`set${this.type}List`, {
         tenonIp: this.tenonIp,
-        storageAll: this.newStorageList,
+        storageAll: this.newStateList,
+        memoryAll: this.newStateList,
       });
-      this.$emit("setStorage", storage);
+      this.$emit("setData", data);
     },
     handleNew() {
       this.dialogFormVisible = true;
     },
     handleStyleItem(type, index) {
-      let data = JSON.parse(JSON.stringify(this.newStorageList[index]));
+      let data = JSON.parse(JSON.stringify(this.newStateList[index]));
       if (type === "editKey") {
         data.keyEditable = true;
       } else if (type === "editValue") {
         data.valEditable = true;
       }
-      this.$set(this.newStorageList, index, data);
+      this.$set(this.newStateList, index, data);
     },
     keyEditblur(type, index) {
-      this.newStorageList[index][type] = false;
-      let storage;
-      if (this.newStorageList[index].key.trim() === "") {
-        this.newStorageList.splice(index, 1);
-        this.$store.commit("setStorageList", {
+      this.newStateList[index][type] = false;
+      let data;
+      if (this.newStateList[index].key.trim() === "") {
+        this.newStateList.splice(index, 1);
+        this.$store.commit(`set${this.type}List`, {
           tenonIp: this.tenonIp,
-          storageAll: this.newStorageList,
+          storageAll: this.newStateList,
+          memoryAll: this.newStateList,
         });
-        storage = {
-          key: this.storageList[this.tenonIp][index].key,
+        data = {
+          key: this.stateList[this.tenonIp][index].key,
           type: "delete",
         };
-        this.$emit("setStorage", storage);
+        this.$emit("setData", data);
       } else if (
-        this.newStorageList[index].value.trim() !==
-        this.storageList[this.tenonIp][index].value
+        this.newStateList[index].value.trim() !==
+        this.stateList[this.tenonIp][index].value
       ) {
-        this.$store.commit("setStorageList", {
+        this.$store.commit(`set${this.type}List`, {
           tenonIp: this.tenonIp,
-          storageAll: this.newStorageList,
+          storageAll: this.newStateList,
+          memoryAll: this.newStateList,
         });
-        storage = {
-          key: this.newStorageList[index].key.trim(),
-          value: this.newStorageList[index].value.trim(),
+        data = {
+          key: this.newStateList[index].key.trim(),
+          value: this.newStateList[index].value.trim(),
           type: "revise",
         };
-        this.$emit("setStorage", storage);
+        this.$emit("setData", data);
       }
     },
   },

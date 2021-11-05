@@ -23,6 +23,7 @@
             :tenonIp="item.ip"
             @getViewTree="getViewTree"
             @getStorage="getStorage"
+            @getMemory="getMemory"
             @getViewInfo="getViewInfo"
             @setViewStyle="setViewStyle"
           />
@@ -33,6 +34,7 @@
         :currentTenonIp="currentTenonIp"
         :currentTenonId="currentShowPage"
         @setStorage="setStorage"
+        @setMemory="setMemory"
       ></console-pan>
     </div>
     <Empty v-else-if="pageList.length === 0 && newUser"></Empty>
@@ -53,9 +55,9 @@ export default {
     Empty,
   },
   data: () => ({
-    currentShowPage: '',
-    model: '0',
-    tab: '',
+    currentShowPage: "",
+    model: "0",
+    tab: "",
     codeLoading: false,
     toolsContainerHeight: 400,
     clientSocket: null,
@@ -66,10 +68,9 @@ export default {
   }),
   watch: {
     currentShowPage(val) {
-      console.log('currentShowPage', val);
       this.currentTenonIp = this.pageList.find((item) => {
         return item.tenonId + "" === val;
-      }).ip;
+      })?.ip;
     },
   },
   computed: {
@@ -106,10 +107,13 @@ export default {
           case 'setPageList':
             msg.params?.pageList?.length && (this.newUser = false);
             that.$store.commit('updatePageList', msg);
+            const index = msg.params?.pageList?.findIndex((item)=>{
+                return item.tenonId === parseInt(that.currentShowPage)
+            })
             if (msg.params.pageList && msg.params.pageList.length) {
               that.$set(that, 'defaultActivePage', msg.params.pageList[0]);
-              that.currentShowPage = that.defaultActivePage.tenonId + '';
-              that.currentTenonIp = that.defaultActivePage.ip + '';
+              (that.currentShowPage === '||index===-1) && (that.currentShowPage = that.defaultActivePage.tenonId + ');
+              // that.currentTenonIp = that.defaultActivePage.ip + ';
             }
             break;
           case 'setViewTree':
@@ -147,6 +151,18 @@ export default {
             console.log('setStorageSuccess', msg);
             this.$message.success('修改Storage成功~');
             break;
+          case 'setMemoryList':
+            console.log('setMemoryList', msg);
+            that.$store.commit('setMemoryList', msg);
+            break;
+          case 'updateMemoryList':
+            console.log('updateMemoryList', msg);
+            that.$store.commit('updateMemoryList', msg);
+            break;
+          case 'setMemorySuccess':
+            console.log('setMemorySuccess', msg);
+            this.$message.success('修改Memory成功~');
+            break;
           default:
             break;
         }
@@ -158,42 +174,57 @@ export default {
         case 'getPageList':
           data = {
             type: 'page',
-            method: 'getPageList'
+            method: 'getPageList',
           };
           break;
         case 'getViewTree':
           data = {
             type: 'view',
             method: 'getViewTree',
-            params
+            params,
           };
           break;
         case 'getViewInfo':
           data = {
             type: 'view',
             method: 'getViewInfo',
-            params
+            params,
           };
           break;
         case 'setViewStyle':
           data = {
             type: 'view',
             method: 'setViewStyle',
-            params
+            params,
           };
           break;
         case 'setStorage':
           data = {
             type: 'storage',
             method: 'setStorage',
-            params
+            params,
           };
           break;
+
         case 'getStorage':
           data = {
             type: 'storage',
             method: 'getStorage',
-            params
+            params,
+          };
+          break;
+        case 'setMemory':
+          data = {
+            type: 'storage',
+            method: 'setMemory',
+            params,
+          };
+          break;
+        case 'getMemory':
+          data = {
+            type: 'storage',
+            method: 'getMemory',
+            params,
           };
           break;
         default:
@@ -206,6 +237,9 @@ export default {
     },
     getStorage(tenonId, tenonIp) {
       this.sendMsgToServer('getStorage', { tenonId, tenonIp });
+    },
+    getMemory(tenonId, tenonIp) {
+      this.sendMsgToServer('getMemory', { tenonId, tenonIp });
     },
     getViewInfo(data) {
       this.sendMsgToServer('getViewInfo', data);
@@ -229,6 +263,12 @@ export default {
       this.sendMsgToServer('setStorage', {
         tenonId: parseInt(tenonId),
         storage,
+      });
+    },
+    setMemory(tenonId, memory) {
+      this.sendMsgToServer('setMemory', {
+        tenonId: parseInt(tenonId),
+        memory,
       });
     },
   },

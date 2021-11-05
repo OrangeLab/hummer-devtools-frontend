@@ -12,12 +12,12 @@
       <el-tab-pane label="NETWORK" name="network" style="height: 100%">
         <Network />
       </el-tab-pane>
-      <el-tab-pane label="STORAGE" name="storage" style="height: 100%">
-        <Storage :tenonIp="currentTenonIp" @setStorage="setStorage" />
+      <el-tab-pane label="STORAGE" name="Storage" style="height: 100%">
+        <Storage :tenonIp="currentTenonIp" type="storage" @setData="setStorage" />
       </el-tab-pane>
-      <el-tab-pane label="MEMORY" name="memory" style="height: 100%"
-        >在做了(新建文件夹</el-tab-pane
-      >
+      <el-tab-pane label="MEMORY" name="Memory" style="height: 100%">
+        <Storage :tenonIp="currentTenonIp" type="memory" @setData="setMemory" />
+      </el-tab-pane>
     </el-tabs>
     <hor-resizer-pan pan="console"></hor-resizer-pan>
   </div>
@@ -76,8 +76,11 @@ export default {
         (this.style = this.toolsContainerStyle);
     },
     setStorage(storage) {
-      this.$emit('setStorage', this.currentTenonId,storage)
+      this.$emit('setStorage', this.currentTenonId, storage)
     },
+    setMemory(memory){
+      this.$emit('setMemory', this.currentTenonId, memory)
+    }
   },
 };
 </script>

@@ -10,6 +10,7 @@ const state = () => ({
   logList: [],
   netWorkList: [],
   storageList: {},
+  memoryList: {},
   pageList: [],
   pageInfoMap: {},
   defaultActivePage: {},
@@ -44,14 +45,38 @@ const mutations = {
       key,
       value,
     } = msg.params||msg;
-    let isHashKey = state.storageList[tenonIp].findIndex(item => item.key === key)
-    if (isHashKey === -1) {
-      state.storageList[tenonIp].push(msg.params||msg)
+    let isHashKey = state.storageList[tenonIp]?.findIndex(item => item.key === key)
+    if (isHashKey === -1 || isHashKey == undefined) {
+      state.storageList[tenonIp]?.push(msg.params||msg)
     } else {
       if (state.storageList[tenonIp][isHashKey].value !== value) {
         let data = JSON.parse(JSON.stringify(state.storageList[tenonIp][isHashKey]))
         data.value = value
         Vue.set(state.storageList[tenonIp], isHashKey, data)
+      }
+    }
+  },
+  setMemoryList(state, msg) {
+    const {
+      tenonIp,
+      memoryAll
+    } = msg?.params || msg;
+    Vue.set(state.memoryList, tenonIp, memoryAll)
+  },
+  updateMemoryList(state, msg) {
+    const {
+      tenonIp,
+      key,
+      value,
+    } = msg.params||msg;
+    let isHashKey = state.memoryList[tenonIp]?.findIndex(item => item.key === key)
+    if (isHashKey === -1 || isHashKey == undefined) {
+      state.memoryList[tenonIp]?.push(msg.params||msg)
+    } else {
+      if (state.memoryList[tenonIp][isHashKey].value !== value) {
+        let data = JSON.parse(JSON.stringify(state.memoryList[tenonIp][isHashKey]))
+        data.value = value
+        Vue.set(state.memoryList[tenonIp], isHashKey, data)
       }
     }
   },

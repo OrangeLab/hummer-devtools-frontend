@@ -53,6 +53,7 @@ export default {
     this.$emit('getViewTree', this.tenonId)
     if(!this.storageList[this.tenonIp]){
       this.$emit('getStorage', this.tenonId, this.tenonIp)
+      this.$emit('getMemory', this.tenonId, this.tenonIp)
     }
   },
   mounted() {
