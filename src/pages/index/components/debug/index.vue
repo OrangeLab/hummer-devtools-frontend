@@ -112,8 +112,8 @@ export default {
             })
             if (msg.params.pageList && msg.params.pageList.length) {
               that.$set(that, 'defaultActivePage', msg.params.pageList[0]);
-              (that.currentShowPage === '||index===-1) && (that.currentShowPage = that.defaultActivePage.tenonId + ');
-              // that.currentTenonIp = that.defaultActivePage.ip + ';
+              (that.currentShowPage ==='' || index===-1) && (that.currentShowPage = that.defaultActivePage.tenonId + '');
+              // that.currentTenonIp = that.defaultActivePage.ip + ;
             }
             break;
           case 'setViewTree':
