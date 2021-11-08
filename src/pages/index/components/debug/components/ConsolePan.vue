@@ -12,11 +12,11 @@
       <el-tab-pane label="NETWORK" name="network" style="height: 100%">
         <Network />
       </el-tab-pane>
-      <el-tab-pane label="STORAGE" name="Storage" style="height: 100%">
-        <Storage :tenonIp="currentTenonIp" type="storage" @setData="setStorage" />
+      <el-tab-pane label="STORAGE" name="storage" style="height: 100%">
+        <Storage :tenonIp="currentTenonIp" type="Storage" @setData="setStorage" />
       </el-tab-pane>
-      <el-tab-pane label="MEMORY" name="Memory" style="height: 100%">
-        <Storage :tenonIp="currentTenonIp" type="memory" @setData="setMemory" />
+      <el-tab-pane label="MEMORY" name="memory" style="height: 100%">
+        <Storage :tenonIp="currentTenonIp" type="Memory" @setData="setMemory" />
       </el-tab-pane>
     </el-tabs>
     <hor-resizer-pan pan="console"></hor-resizer-pan>

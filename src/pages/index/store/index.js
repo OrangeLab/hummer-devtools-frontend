@@ -40,6 +40,7 @@ const mutations = {
     Vue.set(state.storageList, tenonIp, storageAll)
   },
   updateStorageList(state, msg) {
+    debugger
     const {
       tenonIp,
       key,
