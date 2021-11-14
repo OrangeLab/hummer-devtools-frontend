@@ -2,7 +2,7 @@
     <div class="index-container">
       <div class="index-aside-box">
         <div :class="`index-aside ${isPutAway?'aside-put-away':''}`">
-          <div class="img-box">
+          <div class="img-box" @click="goOfficialWebsite">
             <el-image
               style="width: 200px;"
               src="//pt-starimg.didistatic.com/static/starimg/img/9E6O0ZOwok1604372834424.png"
@@ -131,7 +131,10 @@ export default {
         QR.addData(url)
         QR.make()
         $QR.innerHTML = QR.createImgTag(6, 12)
-      }
+      },
+      goOfficialWebsite() {
+        window.open('https://hummer.didi.cn/')
+      },
     }
 };
 </script>
@@ -173,6 +176,7 @@ export default {
     flex-shrink: 0;
     .img-box{
       width: 256px;
+      cursor: pointer;
     }
   }
   .aside-put-away{
