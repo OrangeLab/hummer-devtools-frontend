@@ -1,13 +1,16 @@
-
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { processViewTree } from '@/utils/processViewTree'
+import {
+  processViewTree
+} from '@/utils/processViewTree'
 
 Vue.use(Vuex)
 
 const state = () => ({
   logList: [],
   netWorkList: [],
+  storageList: {},
+  memoryList: {},
   pageList: [],
   pageInfoMap: {},
   defaultActivePage: {},
@@ -20,18 +23,73 @@ const getters = {}
 
 // actions
 const actions = {
-  setActivePan({ commit }, pan) {
+  setActivePan({
+    commit
+  }, pan) {
     commit('ACTIVE_PAN', pan)
   },
 }
 
 // mutations
 const mutations = {
-  updateNetWorkList (state, msg) {
-    const { requestInfo, responseInfo, id} = msg.params;
+  setStorageList(state, msg) {
+    const {
+      tenonIp,
+      storageAll
+    } = msg?.params || msg;
+    Vue.set(state.storageList, tenonIp, storageAll)
+  },
+  updateStorageList(state, msg) {
+    debugger
+    const {
+      tenonIp,
+      key,
+      value,
+    } = msg.params||msg;
+    let isHashKey = state.storageList[tenonIp]?.findIndex(item => item.key === key)
+    if (isHashKey === -1 || isHashKey == undefined) {
+      state.storageList[tenonIp]?.push(msg.params||msg)
+    } else {
+      if (state.storageList[tenonIp][isHashKey].value !== value) {
+        let data = JSON.parse(JSON.stringify(state.storageList[tenonIp][isHashKey]))
+        data.value = value
+        Vue.set(state.storageList[tenonIp], isHashKey, data)
+      }
+    }
+  },
+  setMemoryList(state, msg) {
+    const {
+      tenonIp,
+      memoryAll
+    } = msg?.params || msg;
+    Vue.set(state.memoryList, tenonIp, memoryAll)
+  },
+  updateMemoryList(state, msg) {
+    const {
+      tenonIp,
+      key,
+      value,
+    } = msg.params||msg;
+    let isHashKey = state.memoryList[tenonIp]?.findIndex(item => item.key === key)
+    if (isHashKey === -1 || isHashKey == undefined) {
+      state.memoryList[tenonIp]?.push(msg.params||msg)
+    } else {
+      if (state.memoryList[tenonIp][isHashKey].value !== value) {
+        let data = JSON.parse(JSON.stringify(state.memoryList[tenonIp][isHashKey]))
+        data.value = value
+        Vue.set(state.memoryList[tenonIp], isHashKey, data)
+      }
+    }
+  },
+  updateNetWorkList(state, msg) {
+    const {
+      requestInfo,
+      responseInfo,
+      id
+    } = msg.params;
     if (requestInfo) {
       state.netWorkList.push(msg)
-    } else if(responseInfo) {
+    } else if (responseInfo) {
       let index = state.netWorkList.findIndex(e => e.params.id === id)
       let data = JSON.parse(JSON.stringify(state.netWorkList[index]))
       data.params.responseInfo = responseInfo
@@ -39,37 +97,38 @@ const mutations = {
     }
     console.log(state.netWorkList)
   },
-  clearNetWorkList (state) {
+  clearNetWorkList(state) {
     state.netWorkList = []
   },
-  updateLogList (state, msg) {
+  updateLogList(state, msg) {
     console.log(msg)
     state.logList.push(msg.params)
   },
-  clearLogList (state) {
+  clearLogList(state) {
     state.logList = []
   },
-  updatePageList (state, msg) {
+  updatePageList(state, msg) {
     state.pageList = msg.params.pageList
     if (state.pageList && state.pageList.length) {
       Vue.set(state.defaultActivePage, state.pageList[0])
     }
+    console.log(state.pageList)
   },
-  updatePageInfoMap (state, msg) {
+  updatePageInfoMap(state, msg) {
     Vue.set(state.pageInfoMap, msg.params.tenonId, {
-      
+
       viewTree: msg.params.viewTree,
       baseInfo: msg.params.baseInfo,
       viewTreeData: processViewTree(msg.params.viewTree)
     })
   },
-  updateViewInfo (state, msg) {
+  updateViewInfo(state, msg) {
     Vue.set(state.pageInfoMap, msg.params.tenonId, {
       ...state.pageInfoMap[msg.params.tenonId],
       currentViewInfo: {
         rect: msg.params.rect,
         style: msg.params.style,
-        className:  msg.params.className,
+        className: msg.params.className,
         viewId: msg.params.viewId
       }
     })

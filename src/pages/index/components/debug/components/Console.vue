@@ -120,7 +120,7 @@ export default {
     // },
     getMessageObject(val){
       try {
-        let message = JSON.parse(val.slice(val.indexOf(' ') + 1));
+        let message = JSON.parse(/{.*}/.exec(val)[0]);
         return message
       } catch (error) {
         return {}
@@ -169,7 +169,7 @@ export default {
     // },
     isObject(val) {
       try {
-        let newVal = JSON.parse(val.slice(val.indexOf(' ') + 1));
+        let newVal = JSON.parse(/{.*}/.exec(val)[0]);
         return Object.prototype.toString.call(newVal) === '[object Object]';
       } catch (error) {
         return false;
