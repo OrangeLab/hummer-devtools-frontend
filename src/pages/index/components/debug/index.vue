@@ -1,41 +1,45 @@
 <template>
   <el-container direction="vertical">
     <div class="debug-tools-container" v-if="!newUser">
-      <el-tabs
-        v-model="currentShowPage"
-        type="card"
-        id="tree-view-container"
-        :style="style"
-        v-loading="pageList.length === 0"
-        element-loading-text="等待runtime devtools scoket连接"
-        element-loading-spinner="el-icon-loading"
-      >
-        <el-tab-pane
-          :key="item.tenonId"
-          v-for="item in pageList"
-          :label="'Page-' + item.tenonId"
-          :name="item.tenonId + ''"
-          style="height: 100%"
-          lazy
+      <div class="left-tools-box">
+        <el-tabs
+          v-model="currentShowPage"
+          type="card"
+          id="tree-view-container"
+          :style="style"
+          v-loading="pageList.length === 0"
+          element-loading-text="等待runtime devtools scoket连接"
+          element-loading-spinner="el-icon-loading"
         >
-          <TabPaneContent
-            :tenonId="item.tenonId"
-            :tenonIp="item.ip"
-            @getViewTree="getViewTree"
-            @getStorage="getStorage"
-            @getMemory="getMemory"
-            @getViewInfo="getViewInfo"
-            @setViewStyle="setViewStyle"
-          />
-        </el-tab-pane>
-      </el-tabs>
-      <console-pan
-        :toolsContainerStyle="toolsContainerStyle"
-        :currentTenonIp="currentTenonIp"
-        :currentTenonId="currentShowPage"
-        @setStorage="setStorage"
-        @setMemory="setMemory"
-      ></console-pan>
+          <el-tab-pane
+            :key="item.tenonId"
+            v-for="item in pageList"
+            :label="'Page-' + item.tenonId"
+            :name="item.tenonId + ''"
+            style="height: 100%"
+            lazy
+          >
+            <TabPaneContent
+              :tenonId="item.tenonId"
+              :tenonIp="item.ip"
+              @getViewTree="getViewTree"
+              @getStorage="getStorage"
+              @getMemory="getMemory"
+              @getViewInfo="getViewInfo"
+              @setViewStyle="setViewStyle"
+            />
+          </el-tab-pane>
+        </el-tabs>
+        <console-pan
+          :toolsContainerStyle="toolsContainerStyle"
+          :currentTenonId="currentShowPage"
+          @setStorage="setStorage"
+          @setMemory="setMemory"
+        ></console-pan>
+      </div>
+      <div class="right-tools-box" v-if="pageList.length !== 0">
+        <WebSimulator :currentTenonIp="currentShowPage"></WebSimulator>
+      </div>
     </div>
     <Empty v-else-if="pageList.length === 0 && newUser"></Empty>
   </el-container>
@@ -47,12 +51,14 @@ import TabPaneContent from "./components/TabPaneContent.vue";
 import Empty from "./components/Empty.vue";
 import { mapState } from "vuex";
 import Event from "@/utils/event";
+import WebSimulator from "./components/WebSimulator.vue";
 export default {
   name: "App",
   components: {
     TabPaneContent,
     ConsolePan,
     Empty,
+    WebSimulator,
   },
   data: () => ({
     currentShowPage: "",
@@ -94,74 +100,75 @@ export default {
       );
 
       // Connection opened
-      this.clientSocket.addEventListener('open', () => {
-        this.sendMsgToServer('getPageList', null);
+      this.clientSocket.addEventListener("open", () => {
+        this.sendMsgToServer("getPageList", null);
       });
 
       // Listen for messages
-      this.clientSocket.addEventListener('message', (event) => {
+      this.clientSocket.addEventListener("message", (event) => {
         let msg = JSON.parse(event.data);
-        console.log('Message from server ', msg);
+        console.log("Message from server ", msg);
 
         switch (msg.method) {
-          case 'setPageList':
+          case "setPageList":
             msg.params?.pageList?.length && (this.newUser = false);
-            that.$store.commit('updatePageList', msg);
-            const index = msg.params?.pageList?.findIndex((item)=>{
-                return item.tenonId === parseInt(that.currentShowPage)
-            })
+            that.$store.commit("updatePageList", msg);
+            const index = msg.params?.pageList?.findIndex((item) => {
+              return item.tenonId === parseInt(that.currentShowPage);
+            });
             if (msg.params.pageList && msg.params.pageList.length) {
-              that.$set(that, 'defaultActivePage', msg.params.pageList[0]);
-              (that.currentShowPage ==='' || index===-1) && (that.currentShowPage = that.defaultActivePage.tenonId + '');
+              that.$set(that, "defaultActivePage", msg.params.pageList[0]);
+              (that.currentShowPage === "" || index === -1) &&
+                (that.currentShowPage = that.defaultActivePage.tenonId + "");
               // that.currentTenonIp = that.defaultActivePage.ip + ;
             }
             break;
-          case 'setViewTree':
-            that.$store.commit('updatePageInfoMap', msg);
+          case "setViewTree":
+            that.$store.commit("updatePageInfoMap", msg);
             break;
-          case 'setViewInfo':
+          case "setViewInfo":
             console.log(msg);
-            that.$store.commit('updateViewInfo', msg);
+            that.$store.commit("updateViewInfo", msg);
             break;
-          case 'setNotify':
+          case "setNotify":
             console.log(msg);
             this.$notify(msg.params.notifyConfig);
             break;
-          case 'updateLogList':
-            console.log('updateLogList', typeof msg);
-            that.$store.commit('updateLogList', msg);
+          case "updateLogList":
+            console.log("updateLogList", typeof msg);
+            that.$store.commit("updateLogList", msg);
             break;
-          case 'setStyleSuccess':
-            console.log('setStyleSuccess', typeof msg);
-            this.$message.success('修改样式成功~');
+          case "setStyleSuccess":
+            console.log("setStyleSuccess", typeof msg);
+            this.$message.success("修改样式成功~");
             break;
-          case 'updateNetWorkList':
-            console.log('updateNetWorkList', msg);
-            that.$store.commit('updateNetWorkList', msg);
+          case "updateNetWorkList":
+            console.log("updateNetWorkList", msg);
+            that.$store.commit("updateNetWorkList", msg);
             break;
-          case 'setStorageList':
-            console.log('setStorageList', msg);
-            that.$store.commit('setStorageList', msg);
+          case "setStorageList":
+            console.log("setStorageList", msg);
+            that.$store.commit("setStorageList", msg);
             break;
-          case 'updateStorageList':
-            console.log('updateStorageList', msg);
-            that.$store.commit('updateStorageList', msg);
+          case "updateStorageList":
+            console.log("updateStorageList", msg);
+            that.$store.commit("updateStorageList", msg);
             break;
-          case 'setStorageSuccess':
-            console.log('setStorageSuccess', msg);
-            this.$message.success('修改Storage成功~');
+          case "setStorageSuccess":
+            console.log("setStorageSuccess", msg);
+            this.$message.success("修改Storage成功~");
             break;
-          case 'setMemoryList':
-            console.log('setMemoryList', msg);
-            that.$store.commit('setMemoryList', msg);
+          case "setMemoryList":
+            console.log("setMemoryList", msg);
+            that.$store.commit("setMemoryList", msg);
             break;
-          case 'updateMemoryList':
-            console.log('updateMemoryList', msg);
-            that.$store.commit('updateMemoryList', msg);
+          case "updateMemoryList":
+            console.log("updateMemoryList", msg);
+            that.$store.commit("updateMemoryList", msg);
             break;
-          case 'setMemorySuccess':
-            console.log('setMemorySuccess', msg);
-            this.$message.success('修改Memory成功~');
+          case "setMemorySuccess":
+            console.log("setMemorySuccess", msg);
+            this.$message.success("修改Memory成功~");
             break;
           default:
             break;
@@ -171,59 +178,59 @@ export default {
     sendMsgToServer(method, params) {
       let data = {};
       switch (method) {
-        case 'getPageList':
+        case "getPageList":
           data = {
-            type: 'page',
-            method: 'getPageList',
+            type: "page",
+            method: "getPageList",
           };
           break;
-        case 'getViewTree':
+        case "getViewTree":
           data = {
-            type: 'view',
-            method: 'getViewTree',
+            type: "view",
+            method: "getViewTree",
             params,
           };
           break;
-        case 'getViewInfo':
+        case "getViewInfo":
           data = {
-            type: 'view',
-            method: 'getViewInfo',
+            type: "view",
+            method: "getViewInfo",
             params,
           };
           break;
-        case 'setViewStyle':
+        case "setViewStyle":
           data = {
-            type: 'view',
-            method: 'setViewStyle',
+            type: "view",
+            method: "setViewStyle",
             params,
           };
           break;
-        case 'setStorage':
+        case "setStorage":
           data = {
-            type: 'storage',
-            method: 'setStorage',
+            type: "storage",
+            method: "setStorage",
             params,
           };
           break;
 
-        case 'getStorage':
+        case "getStorage":
           data = {
-            type: 'storage',
-            method: 'getStorage',
+            type: "storage",
+            method: "getStorage",
             params,
           };
           break;
-        case 'setMemory':
+        case "setMemory":
           data = {
-            type: 'storage',
-            method: 'setMemory',
+            type: "storage",
+            method: "setMemory",
             params,
           };
           break;
-        case 'getMemory':
+        case "getMemory":
           data = {
-            type: 'storage',
-            method: 'getMemory',
+            type: "storage",
+            method: "getMemory",
             params,
           };
           break;
@@ -233,22 +240,22 @@ export default {
       this.clientSocket.send(JSON.stringify(data));
     },
     getViewTree(tenonId) {
-      this.sendMsgToServer('getViewTree', { tenonId });
+      this.sendMsgToServer("getViewTree", { tenonId });
     },
     getStorage(tenonId, tenonIp) {
-      this.sendMsgToServer('getStorage', { tenonId, tenonIp });
+      this.sendMsgToServer("getStorage", { tenonId, tenonIp });
     },
     getMemory(tenonId, tenonIp) {
-      this.sendMsgToServer('getMemory', { tenonId, tenonIp });
+      this.sendMsgToServer("getMemory", { tenonId, tenonIp });
     },
     getViewInfo(data) {
-      this.sendMsgToServer('getViewInfo', data);
+      this.sendMsgToServer("getViewInfo", data);
     },
     setViewStyle(data) {
-      this.sendMsgToServer('setViewStyle', data);
+      this.sendMsgToServer("setViewStyle", data);
     },
     handleClick(name) {
-      console.log('handleClick', name);
+      console.log("handleClick", name);
     },
     styleInit() {
       Event.$on(`set-tab-pan-style`, (style) => {
@@ -260,13 +267,13 @@ export default {
       this.style = { height: `calc(100% - ${this.toolsContainerHeight}px)` };
     },
     setStorage(tenonId, storage) {
-      this.sendMsgToServer('setStorage', {
+      this.sendMsgToServer("setStorage", {
         tenonId: parseInt(tenonId),
         storage,
       });
     },
     setMemory(tenonId, memory) {
-      this.sendMsgToServer('setMemory', {
+      this.sendMsgToServer("setMemory", {
         tenonId: parseInt(tenonId),
         memory,
       });
@@ -287,6 +294,8 @@ body {
 .debug-tools-container {
   height: 100%;
   position: relative;
+  display: flex;
+  flex-direction: row;
   .el-tabs__content {
     height: calc(100% - 70px);
     overflow: auto;
@@ -298,5 +307,16 @@ body {
 }
 .index-main {
   position: relative;
+}
+.left-tools-box {
+  width: 100%;
+  position: relative;
+  height: 100%;
+}
+.right-tools-box {
+  width: 500px;
+  position: relative;
+  border-left: 1px solid gainsboro;
+  padding: 5px 0 0 10px;
 }
 </style>
