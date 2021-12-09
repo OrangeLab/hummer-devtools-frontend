@@ -69,7 +69,8 @@ export default {
       if (this.resizing) {
         e.preventDefault()
         const parentHeight = document.getElementById('index-main');
-        const newNextPanLeft = (e.clientX - parentHeight.offsetLeft) / parentHeight.offsetWidth * 100
+        const rightTools = document.getElementById('right-tools-box')
+        const newNextPanLeft = (e.clientX - parentHeight.offsetLeft) / (parentHeight.offsetWidth - rightTools.offsetWidth) * 100
         if (
             (newNextPanLeft - this.originalCurrentPanLeft > 5) &&
             (100 - newNextPanLeft - this.originalNextPanRight > 5)

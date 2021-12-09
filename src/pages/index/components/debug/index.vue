@@ -37,7 +37,7 @@
           @setMemory="setMemory"
         ></console-pan>
       </div>
-      <div class="right-tools-box" v-if="pageList.length !== 0">
+      <div class="right-tools-box" id="right-tools-box" v-if="pageList.length !== 0">
         <WebSimulator :currentTenonIp="currentShowPage"></WebSimulator>
       </div>
     </div>
@@ -314,7 +314,6 @@ body {
   height: 100%;
 }
 .right-tools-box {
-  width: 500px;
   position: relative;
   border-left: 1px solid gainsboro;
   padding: 5px 0 0 10px;
