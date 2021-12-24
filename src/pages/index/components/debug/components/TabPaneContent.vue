@@ -22,7 +22,7 @@ export default {
   components: {
     PageInfo,
     TreeView,
-    ViewInfo
+    ViewInfo,
   },
   watch: {
   },

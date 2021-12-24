@@ -49,6 +49,7 @@
         </div>
       </el-collapse-item>
     </el-collapse>
+    <!-- <VerResizerPan :pan="pan" /> -->
   </div>
 </template>
 
@@ -58,6 +59,7 @@ import Event from '@/utils/event'
 import panPosition from '@/utils/pan-position'
 import UnitTipPopover from './UnitTipPopover'
 import { styleDefault } from '@/utils/styleDefault'
+import VerResizerPan from './VerResizerPan'
 export default {
   props: {
     resizing: Boolean,
@@ -72,6 +74,7 @@ export default {
   },
   components: {
     UnitTipPopover,
+    VerResizerPan
   },
   data() {
     return {

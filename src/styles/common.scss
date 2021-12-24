@@ -7,9 +7,9 @@
   bottom: 0;
   box-sizing: border-box;
   border-right: 1px solid gainsboro;
-  &:nth-child(3) {
-    border: none
-  }
+  // &:last-child {
+  //   border: none
+  // }
   &.resizing {
     cursor: col-resize;
   }
