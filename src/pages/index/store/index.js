@@ -16,6 +16,7 @@ const state = () => ({
   defaultActivePage: {},
   activePan: 'console',
   visiblePans: ['page', 'tree', 'view'],
+  webPath:null,
 })
 
 // getters
@@ -116,11 +117,12 @@ const mutations = {
   },
   updatePageInfoMap(state, msg) {
     Vue.set(state.pageInfoMap, msg.params.tenonId, {
-
+      webPath:msg.params.path.split('.js')[0],
       viewTree: msg.params.viewTree,
       baseInfo: msg.params.baseInfo,
       viewTreeData: processViewTree(msg.params.viewTree)
     })
+    // state.webPath = msg.params.path.split('.js')[0]
   },
   updateViewInfo(state, msg) {
     Vue.set(state.pageInfoMap, msg.params.tenonId, {
