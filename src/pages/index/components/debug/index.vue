@@ -38,7 +38,7 @@
         ></console-pan>
       </div>
       <div class="right-tools-box" id="right-tools-box" v-if="pageList.length !== 0">
-        <WebSimulator :currentTenonIp="currentShowPage"></WebSimulator>
+        <WebSimulator :currentTenonIp="currentShowPage" @getViewInfo="getViewInfo"></WebSimulator>
       </div>
     </div>
     <Empty v-else-if="pageList.length === 0 && newUser"></Empty>

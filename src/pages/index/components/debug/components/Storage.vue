@@ -105,11 +105,13 @@ export default {
       deep: true,
       handler(val) {
         // localStorage.setItem("devToolStorage", JSON.stringify(val));
-        this.newStateList = JSON.parse(JSON.stringify(val[this.tenonIp]));
-        this.newStateList.forEach((item) => {
-          item.keyEditable = false;
-          item.valEditable = false;
-        });
+        if (this.tenonIp) {
+          this.newStateList = JSON.parse(JSON.stringify(val[this.tenonIp]));
+          this.newStateList.forEach((item) => {
+            item.keyEditable = false;
+            item.valEditable = false;
+          });
+        }
       },
     },
     tenonIp: {

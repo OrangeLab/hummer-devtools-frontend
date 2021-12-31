@@ -27,27 +27,51 @@
             id="iframe"
           ></iframe>
         </div>
+        <div class="elements-highlight-box">
+          <ElementsHighlight
+            v-if="openElementMap && highlightElementInfo"
+            :highlightElementInfo="highlightElementInfo"
+          ></ElementsHighlight>
+        </div>
       </div>
+    </div>
+    <div class="element-map-box">
+      <!-- <el-switch
+        style="display: block"
+        v-model="openElementMap"
+        active-color="#67C23A"
+        inactive-color="#ff4949"
+        active-text="元素检查"
+      >
+      </el-switch> -->
+      <el-checkbox v-model="openElementMap">元素检查</el-checkbox>
     </div>
   </div>
 </template>
 
 <script>
 import { mapState } from "vuex";
-import { updateQueryStringParameter } from "@/utils/index";
+import { updateQueryStringParameter, throttle } from "@/utils/index";
+import ElementsHighlight from "./ElementsHighlight.vue";
+import Event from "@/utils/event";
 export default {
   props: {
     currentTenonIp: {
       type: String,
     },
+    tenonId: [String, Number],
   },
-  components: {},
+  components: {
+    ElementsHighlight,
+  },
   data() {
     return {
       webServerPort: null,
       name: "模拟器",
       iframeReady: false,
       nowTime: null,
+      openElementMap: false,
+      highlightElementInfo: null,
     };
   },
   computed: {
@@ -73,18 +97,20 @@ export default {
     webUrl() {
       this.iframeReady = false;
     },
+    openElementMap(val) {
+      this.$refs.iframe.contentWindow.postMessage(val, "*");
+    },
   },
   created() {
     this.getwebServerPort();
     this.nowTimes();
+    this.message = throttle(this.message.bind(this), 200);
   },
   mounted() {
     let oFrm = this.$refs.iframe;
     let that = this;
-    // debugger
     if (oFrm.attachEvent) {
       oFrm.attachEvent("onload", function () {
-        debugger;
         // iframe加载完毕以后执行操作
         that.iframeReady = true;
       });
@@ -92,9 +118,9 @@ export default {
       oFrm.onload = function () {
         // iframe加载完毕以后执行操作
         that.iframeReady = true;
-        // console.log(oFrm.parent.document.getElementById("iframe").contentWindow.location.href)
       };
     }
+    window.addEventListener("message", this.message.bind(this), false);
   },
   destroyed() {
     this.clear();
@@ -125,6 +151,22 @@ export default {
     clear() {
       clearTimeout(this.nowTimes);
       this.nowTimes = null;
+      window.removeEventListener("message", this.message.bind(this), false);
+    },
+    message(e) {
+      let nodeInfo = e.data;
+      if (
+        this.highlightElementInfo !== nodeInfo &&
+        nodeInfo.nodeType === 1 &&
+        nodeInfo.tagName !== undefined
+      ) {
+        this.highlightElementInfo = nodeInfo;
+        Event.$emit('set-current-key', nodeInfo.__view_id)
+        this.$emit("getViewInfo", {
+          tenonId: parseInt(this.currentTenonIp),
+          viewId: nodeInfo.__view_id,
+        });
+      }
     },
   },
 };
@@ -138,7 +180,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: 30px;
+    margin-top: 10px;
   }
   .hummer__doc-demo__phone-border {
     width: 338px;
@@ -230,6 +272,22 @@ export default {
         box-sizing: border-box;
       }
     }
+    .elements-highlight-box {
+      margin-top: 36px;
+      position: absolute;
+      top: 18.4px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 300px;
+      height: 624px;
+      box-sizing: border-box;
+      overflow: hidden;
+      pointer-events: none;
+    }
+  }
+  .element-map-box {
+    text-align: left;
+    margin-top: 10px;
   }
 }
 </style>
