@@ -1,42 +1,44 @@
 <template>
-  <div class="containers" :class="{ resizing }" :style="style">
-    <el-row>
-      <el-col :span="6">
-        <div class="col-title">TreeView</div>
-      </el-col>
-      <el-col :span="12" :offset="6">
-        <el-input
-          placeholder="请输入组件名"
-          v-model="tagName"
-          @input="handleSearchTag"
-          clearable
-        >
-        </el-input>
-      </el-col>
-    </el-row>
-    <el-tree
-      :expand-on-click-node="false"
-      :highlight-current="true"
-      :data="treeData"
-      ref="treeEl"
-      node-key="__view_id"
-      :default-expand-all="true"
-      @node-click="handleNodeClick"
-    >
-      <div :class="'custom-tree-node'" slot-scope="{ node, data }">
-        <span>
-          <span v-text="'<'"></span>
-          <span v-html="node.label"></span>
-          <span v-text="'>'"></span>
-        </span>
-        <span v-if="data.name == 'text'">{{ data.text }}</span>
-        <TreeViewImage
-          v-if="data.name == 'image'"
-          :imgUrl="data.src"
-        ></TreeViewImage>
-      </div>
-    </el-tree>
-    <VerResizerPan pan="tree" />
+  <div class="containers" :class="{ resizing }" ref="containers" :style="style">
+    <div class="resizerBox">
+      <el-row>
+        <el-col :span="6">
+          <div class="col-title">TreeView</div>
+        </el-col>
+        <el-col :span="12" :offset="6">
+          <el-input
+            placeholder="请输入组件名"
+            v-model="tagName"
+            @input="handleSearchTag"
+            clearable
+          >
+          </el-input>
+        </el-col>
+      </el-row>
+      <el-tree
+        :expand-on-click-node="false"
+        :highlight-current="true"
+        :data="treeData"
+        ref="treeEl"
+        node-key="__view_id"
+        :default-expand-all="true"
+        @node-click="handleNodeClick"
+      >
+        <div :class="'custom-tree-node'" slot-scope="{ node, data }">
+          <span>
+            <span v-text="'<'"></span>
+            <span v-html="node.label"></span>
+            <span v-text="'>'"></span>
+          </span>
+          <span v-if="data.name == 'text'">{{ data.text }}</span>
+          <TreeViewImage
+            v-if="data.name == 'image'"
+            :imgUrl="data.src"
+          ></TreeViewImage>
+        </div>
+      </el-tree>
+      <VerResizerPan pan="tree" :parentNode="refContainers" />
+    </div>
   </div>
 </template>
 
@@ -66,6 +68,7 @@ export default {
       tagName: "",
       matchedKeys: [], // ids
       cloneTreeData: [],
+      refContainers: null,
     };
   },
   computed: {
@@ -90,8 +93,9 @@ export default {
   mounted() {
     this.pageInit();
     Event.$on("set-current-key", (viewId) => {
-      this.$refs?.treeEl&&this.$refs.treeEl.setCurrentKey(viewId);
+      this.$refs?.treeEl && this.$refs.treeEl.setCurrentKey(viewId);
     });
+    this.refContainers = this.$refs.containers;
   },
   watch: {
     visiblePans: {
@@ -162,5 +166,12 @@ export default {
   justify-content: space-between;
   font-size: 14px;
   padding-right: 8px;
+}
+.containers{
+  padding:0;
+}
+.resizerBox {
+  position: relative;
+  padding: 5px;
 }
 </style>

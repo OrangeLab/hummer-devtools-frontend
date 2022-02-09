@@ -35,7 +35,7 @@
         </div>
       </div>
     </div>
-    <div class="element-map-box">
+    <div class="element-map-box" v-if="devToolType!=='hummer'">
       <!-- <el-switch
         style="display: block"
         v-model="openElementMap"
@@ -77,6 +77,7 @@ export default {
   computed: {
     ...mapState({
       pageInfoMap: (state) => state.pageInfoMap,
+      devToolType:(state) => state.devToolType,
     }),
     webUrl() {
       if (
