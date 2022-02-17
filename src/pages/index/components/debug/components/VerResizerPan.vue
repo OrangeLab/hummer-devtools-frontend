@@ -13,6 +13,7 @@ import { mapState } from 'vuex'
 export default {
   props: {
     pan: '',
+    parentNode:null,
   },
   data() {
     return {
@@ -49,7 +50,7 @@ export default {
     handleMouseDown() {
       this.resizing = true
       this.emitMouseUpEvent()
-      this.currentPan = this.$refs.resizer.parentNode
+      this.currentPan = this.parentNode||this.$refs.resizer.parentNode
       this.nextPan = this.getNextVisiblePan(this.currentPan)
       this.originalNextPanLeft = parseFloat(this.nextPan.style.left)
       this.originalNextPanRight = parseFloat(this.nextPan.style.right)

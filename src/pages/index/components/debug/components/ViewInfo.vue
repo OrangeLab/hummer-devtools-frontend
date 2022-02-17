@@ -157,11 +157,12 @@ export default {
     keyEditblur(type, index, styleItem) {
       let setDefault = false
       styleItem[type] = false
-      if(styleItem.key.trim() === '' || styleItem.value.trim() === '') {
+      if(styleItem.key.trim() === '' && styleItem.value.trim() === '') {
         this.currentViewStyles.splice(index, 1)
         setDefault = true
+      }else if(styleItem.key.trim() !== '' && styleItem.value.trim() !== ''&&styleItem.checked){
+        this.setViewStyle(setDefault, index)
       }
-      this.setViewStyle(setDefault, index)
     },
     handleStyleItem(type, index, styleItem) {
       console.log(type, index, styleItem)
