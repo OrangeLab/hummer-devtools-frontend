@@ -32,13 +32,14 @@
         </el-tabs>
         <console-pan
           :toolsContainerStyle="toolsContainerStyle"
+          :currentTenonIp="currentTenonIp"
           :currentTenonId="currentShowPage"
           @setStorage="setStorage"
           @setMemory="setMemory"
         ></console-pan>
       </div>
       <div class="right-tools-box" id="right-tools-box" v-if="pageList.length !== 0">
-        <WebSimulator :currentTenonIp="currentShowPage" @getViewInfo="getViewInfo"></WebSimulator>
+        <WebSimulator :currentTenonId="currentShowPage" @getViewInfo="getViewInfo"></WebSimulator>
       </div>
     </div>
     <Empty v-else-if="pageList.length === 0 && newUser"></Empty>
