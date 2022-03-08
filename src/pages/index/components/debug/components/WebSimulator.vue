@@ -56,7 +56,7 @@ import ElementsHighlight from "./ElementsHighlight.vue";
 import Event from "@/utils/event";
 export default {
   props: {
-    currentTenonIp: {
+    currentTenonId: {
       type: String,
     },
     tenonId: [String, Number],
@@ -83,10 +83,10 @@ export default {
       if (
         window.location.hostname &&
         this.webServerPort &&
-        this.pageInfoMap[this.currentTenonIp]?.webPath
+        this.pageInfoMap[this.currentTenonId]?.webPath
       ) {
         let url = `http://${window.location.hostname}:${this.webServerPort}/${
-          this.pageInfoMap[this.currentTenonIp]?.webPath
+          this.pageInfoMap[this.currentTenonId]?.webPath
         }`;
         return updateQueryStringParameter(url, "navBar", "1");
       } else {
@@ -164,7 +164,7 @@ export default {
         this.highlightElementInfo = nodeInfo;
         Event.$emit('set-current-key', nodeInfo.__view_id)
         this.$emit("getViewInfo", {
-          tenonId: parseInt(this.currentTenonIp),
+          tenonId: parseInt(this.currentTenonId),
           viewId: nodeInfo.__view_id,
         });
       }
