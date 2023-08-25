@@ -2,7 +2,7 @@
   <div class="view-tree-comp">
     <PageInfo :baseInfo="baseInfo" />
     
-    <TreeView :tenonId="tenonId" @getViewInfo="getViewInfo" />
+    <TreeView :tenonId="tenonId" @getViewInfo="getViewInfo" @refreshView="refreshView" :loading="treeViewLoading" />
     
     <ViewInfo :currentViewInfo="currentViewInfo" @setViewStyle="setViewStyle" />
   </div>
@@ -17,7 +17,8 @@ import ViewInfo from './ViewInfo.vue'
 export default {
   props: {
     tenonId: [String, Number],
-    tenonIp: String
+    tenonIp: String,
+    treeViewLoading: Boolean
   },
   components: {
     PageInfo,
@@ -66,6 +67,9 @@ export default {
         tenonId: this.tenonId,
         viewId
       })
+    },
+    refreshView(){
+      this.$emit("refreshView", this.tenonId)
     },
     pageInit() {
       Event.$on('mouse-up-event', resizing => {

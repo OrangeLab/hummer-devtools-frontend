@@ -22,11 +22,14 @@
             <TabPaneContent
               :tenonId="item.tenonId"
               :tenonIp="item.ip"
+              :treeViewLoading="treeViewLoading"
               @getViewTree="getViewTree"
               @getStorage="getStorage"
+              @refreshView="refreshView"
               @getMemory="getMemory"
               @getViewInfo="getViewInfo"
               @setViewStyle="setViewStyle"
+
             />
           </el-tab-pane>
         </el-tabs>
@@ -72,6 +75,7 @@ export default {
     style: {},
     newUser: true,
     currentTenonIp: null,
+    treeViewLoading: false
   }),
   watch: {
     currentShowPage(val) {
@@ -108,7 +112,6 @@ export default {
       // Listen for messages
       this.clientSocket.addEventListener("message", (event) => {
         let msg = JSON.parse(event.data);
-        console.log("Message from server ", msg);
 
         switch (msg.method) {
           case "setPageList":
@@ -126,6 +129,7 @@ export default {
             break;
           case "setViewTree":
             that.$store.commit("updatePageInfoMap", msg);
+            this.treeViewLoading = false
             break;
           case "setViewInfo":
             console.log(msg);
@@ -242,6 +246,10 @@ export default {
     },
     getViewTree(tenonId) {
       this.sendMsgToServer("getViewTree", { tenonId });
+    },
+    refreshView(tenonId){
+      this.treeViewLoading = true
+      this.sendMsgToServer("getViewTree", { tenonId, refresh: true });
     },
     getStorage(tenonId, tenonIp) {
       this.sendMsgToServer("getStorage", { tenonId, tenonIp });
