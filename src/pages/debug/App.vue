@@ -81,7 +81,6 @@ export default {
       // Listen for messages
       this.clientSocket.addEventListener('message',  (event) => {
           let msg = JSON.parse(event.data)
-          console.log('Message from server ', msg);
           
           switch (msg.method) {
             case 'setPageList':

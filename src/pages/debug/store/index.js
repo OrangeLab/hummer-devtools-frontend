@@ -40,9 +40,7 @@ const mutations = {
     }
   },
   updatePageInfoMap (state, msg) {
-    console.log(1111111)
     Vue.set(state.pageInfoMap, msg.params.tenonId, {
-      
       viewTree: msg.params.viewTree,
       baseInfo: msg.params.baseInfo,
       viewTreeData: processViewTree(msg.params.viewTree)

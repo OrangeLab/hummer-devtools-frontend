@@ -1,9 +1,15 @@
 <template>
-  <div class="containers" :class="{ resizing }" ref="containers" :style="style">
+  <div class="containers" v-loading="loading" :class="{ resizing }" ref="containers" :style="style">
     <div class="resizerBox">
       <el-row>
         <el-col :span="6">
-          <div class="col-title">TreeView</div>
+          <div class="col-title">
+            <span>TreeView</span>&nbsp;
+            <div @click="refreshView" title="刷新">
+              <el-icon class="refresh" name="refresh" />
+            </div>
+          </div>
+          
         </el-col>
         <el-col :span="12" :offset="6">
           <el-input
@@ -24,17 +30,20 @@
         :default-expand-all="true"
         @node-click="handleNodeClick"
       >
-        <div :class="'custom-tree-node'" slot-scope="{ node, data }">
-          <span>
-            <span v-text="'<'"></span>
-            <span v-html="node.label"></span>
-            <span v-text="'>'"></span>
-          </span>
-          <span v-if="data.name == 'text'">{{ data.text }}</span>
-          <TreeViewImage
-            v-if="data.name == 'image'"
-            :imgUrl="data.src"
-          ></TreeViewImage>
+        <div :class="'custom-tree-node'" slot-scope="{ node, data }" >
+          <div  :style="{ display: data.style && data.style.display ? data.style.display : 'inline-block' }">
+            <span>
+              <span v-text="'<'"></span>
+              <span v-html="node.label"></span>
+              <span v-text="'>'"></span>
+            </span>
+            <span v-if="data.name == 'text'" >{{ data.text }}</span>
+            <TreeViewImage
+              v-if="data.name == 'image'"
+              :imgUrl="data.src"
+            ></TreeViewImage>
+          </div>
+
         </div>
       </el-tree>
       <VerResizerPan pan="tree" :parentNode="refContainers" />
@@ -51,6 +60,7 @@ import Event from "@/utils/event";
 export default {
   props: {
     resizing: Boolean,
+    loading: Boolean,
     baseInfo: {
       type: Object,
       default: () => ({}),
@@ -77,11 +87,17 @@ export default {
       pageInfoMap: (state) => state.pageInfoMap,
     }),
     viewTreeData() {
-      return (
-        (this.pageInfoMap[this.tenonId] &&
-          this.pageInfoMap[this.tenonId].viewTreeData) ||
-        []
-      );
+      let arrayData = this.pageInfoMap[this.tenonId] && this.pageInfoMap[this.tenonId].viewTreeData || []
+      
+      // 保留 没有 style 的 和 display 不为 none 的
+      const recursion = data => {
+        const treeData = data.filter(item => !item.style || item.style.display !== 'none')
+        treeData.forEach(x => x.children && (x.children = recursion(x.children)))
+        return treeData
+      }
+      recursion(arrayData)
+
+      return arrayData
     },
     treeData() {
       return this.tagName ? this.cloneTreeData : this.viewTreeData;
@@ -153,6 +169,9 @@ export default {
             };
       });
     },
+    refreshView(){
+      this.$emit("refreshView")
+    }
   },
 };
 </script>
@@ -173,5 +192,10 @@ export default {
 .resizerBox {
   position: relative;
   padding: 5px;
+  .refresh{
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+  }
 }
 </style>
